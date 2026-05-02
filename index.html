@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KING BOO · Royal Haunting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Press+Start+2P&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
+<script type="importmap">
+{ "imports": {
+  "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+  "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/"
+} }
+</script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%;overflow:hidden;background:#0a0613;font-family:'Space Grotesk',sans-serif;color:#f3e7ff;cursor:none}
+  #game{position:fixed;inset:0}
+  #game canvas{display:block}
+
+  /* HUD */
+  .hud{position:fixed;font-family:'Press Start 2P',monospace;color:#fff;text-shadow:0 0 8px #b794f6,0 0 16px #6b46c1;z-index:10;pointer-events:none;font-size:11px;letter-spacing:1px}
+  .hud.tl{top:18px;left:20px}
+  .hud.tr{top:18px;right:20px;text-align:right}
+  .hud.bl{bottom:18px;left:20px;font-size:9px;line-height:1.7;text-shadow:0 0 6px #6b46c1}
+  .hud.br{bottom:18px;right:20px;text-align:right;font-size:9px;line-height:1.7;text-shadow:0 0 6px #6b46c1}
+
+  .crown{display:inline-block;color:#ffd700;text-shadow:0 0 6px #ffd700;margin-right:4px}
+
+  /* Cooldown bar */
+  .cd-row{display:flex;align-items:center;gap:6px;margin-top:6px}
+  .cd-label{font-size:8px;color:#cfb0ff}
+  .cd-bar{width:80px;height:6px;border:1px solid #7c3aed;background:rgba(0,0,0,0.5);border-radius:2px;overflow:hidden}
+  .cd-fill{height:100%;background:linear-gradient(90deg,#b794f6,#7c3aed);transition:width 0.05s linear}
+
+  /* Title screen */
+  .title-screen{position:fixed;inset:0;background:radial-gradient(ellipse at center,#1a0d2e 0%,#000 80%);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:default}
+  .title-screen.hidden{display:none}
+  .title-screen h1{font-family:'Press Start 2P',monospace;font-size:54px;color:#fff;text-shadow:0 0 20px #b794f6,0 0 40px #7c3aed,0 0 60px #6b21a8;letter-spacing:8px;margin-bottom:18px;animation:title-float 3s ease-in-out infinite}
+  .title-screen h1 .crown{font-size:48px;animation:crown-bob 1.4s ease-in-out infinite}
+  .title-screen .subtitle{font-family:'Cinzel',serif;font-size:18px;color:#cfb0ff;letter-spacing:6px;margin-bottom:42px;opacity:0.85}
+  .title-screen .controls{display:grid;grid-template-columns:auto auto;gap:8px 24px;font-family:'Press Start 2P',monospace;font-size:10px;color:#cfb0ff;margin-bottom:42px;line-height:2}
+  .title-screen .controls .key{color:#ffd700;text-shadow:0 0 8px #ffd700}
+  .title-screen .start{padding:18px 36px;background:rgba(123,58,237,0.2);border:2px solid #b794f6;color:#fff;font-family:'Press Start 2P',monospace;font-size:14px;letter-spacing:2px;cursor:pointer;border-radius:4px;text-shadow:0 0 8px #b794f6;animation:start-pulse 1.6s ease-in-out infinite}
+  .title-screen .start:hover{background:rgba(123,58,237,0.5);transform:scale(1.05)}
+  .title-screen .credits{position:absolute;bottom:18px;font-size:8px;color:#7c3aed;font-family:'Press Start 2P',monospace;letter-spacing:2px;opacity:0.5}
+  @keyframes title-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  @keyframes crown-bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-6px) rotate(3deg)}}
+  @keyframes start-pulse{0%,100%{box-shadow:0 0 10px #b794f6}50%{box-shadow:0 0 30px #b794f6,0 0 50px #7c3aed}}
+
+  /* Score popups */
+  .popup{position:absolute;font-family:'Press Start 2P',monospace;font-size:14px;color:#ffd700;text-shadow:0 0 8px #ffd700,0 0 16px #ff8c00;pointer-events:none;animation:popup-rise 1.4s ease-out forwards;z-index:5}
+  @keyframes popup-rise{0%{opacity:0;transform:translateY(0) scale(0.6)}20%{opacity:1;transform:translateY(-10px) scale(1.2)}100%{opacity:0;transform:translateY(-80px) scale(0.9)}}
+
+  /* Custom cursor (crown) */
+  #cursor{position:fixed;width:0;height:0;pointer-events:none;z-index:200;transform:translate(-50%,-50%)}
+  #cursor::before{content:'♕';position:absolute;left:0;top:0;transform:translate(-50%,-50%);color:#ffd700;font-size:18px;text-shadow:0 0 8px #ffd700}
+
+  /* Win screen */
+  .win-screen{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99;display:none;flex-direction:column;align-items:center;justify-content:center;cursor:default}
+  .win-screen.show{display:flex}
+  .win-screen h2{font-family:'Press Start 2P',monospace;font-size:44px;color:#ffd700;text-shadow:0 0 16px #ffd700,0 0 32px #ff8c00;margin-bottom:28px;letter-spacing:4px}
+  .win-screen .score-final{font-family:'Press Start 2P',monospace;font-size:18px;color:#cfb0ff;margin-bottom:32px;letter-spacing:2px}
+  .win-screen button{padding:14px 28px;background:rgba(123,58,237,0.2);border:2px solid #b794f6;color:#fff;font-family:'Press Start 2P',monospace;font-size:11px;letter-spacing:2px;cursor:pointer;border-radius:4px}
+
+  /* Bottom hint */
+  .hint{position:fixed;left:50%;transform:translateX(-50%);bottom:8px;font-family:'Press Start 2P',monospace;font-size:7px;letter-spacing:2px;color:rgba(207,176,255,0.4);z-index:5}
+</style>
+</head>
+<body>
+
+<div id="game"></div>
+<div id="cursor"></div>
+
+<div class="hud tl">
+  <div><span class="crown">♕</span>SCARES <span id="score-scares" style="color:#ffd700">0</span></div>
+  <div style="margin-top:8px"><span class="crown">♛</span>GHOSTS <span id="score-ghosts" style="color:#b794f6">0</span></div>
+</div>
+
+<div class="hud tr">
+  <div>MARIOS LEFT <span id="marios-left" style="color:#ff6677">8</span></div>
+  <div style="margin-top:8px;font-size:9px;color:#cfb0ff">CAPTURE THEM ALL</div>
+</div>
+
+<div class="hud bl">
+  <div class="cd-row"><span class="cd-label">TONGUE</span><div class="cd-bar"><div class="cd-fill" id="cd-tongue" style="width:100%"></div></div></div>
+  <div class="cd-row"><span class="cd-label">VANISH</span><div class="cd-bar"><div class="cd-fill" id="cd-vanish" style="width:100%"></div></div></div>
+  <div class="cd-row"><span class="cd-label">DASH  </span><div class="cd-bar"><div class="cd-fill" id="cd-dash" style="width:100%"></div></div></div>
+</div>
+
+<div class="hud br">
+  <div>WASD &middot; FLOAT</div>
+  <div>SPACE &middot; TONGUE LASH</div>
+  <div>E &middot; VANISH</div>
+  <div>SHIFT &middot; DASH</div>
+  <div>MOUSE &middot; LOOK</div>
+</div>
+
+<div class="title-screen" id="title">
+  <h1><span class="crown">♕</span>KING BOO</h1>
+  <div class="subtitle">ROYAL HAUNTING</div>
+  <div class="controls">
+    <span class="key">WASD</span><span>Float around the mansion</span>
+    <span class="key">MOUSE</span><span>Rotate the royal gaze</span>
+    <span class="key">SPACE</span><span>Lash the tongue · scare Marios</span>
+    <span class="key">E</span><span>Vanish (sneak past plumbers)</span>
+    <span class="key">SHIFT</span><span>Royal dash</span>
+  </div>
+  <button class="start" id="start-btn">START THE HAUNT</button>
+  <div class="credits">EUDAIMON · ROYAL ENTERTAINMENT · 2026</div>
+</div>
+
+<div class="win-screen" id="win-screen">
+  <h2 id="win-title">ROYAL VICTORY</h2>
+  <div class="score-final" id="win-score">SCARES · 0 &middot; GHOSTS · 0</div>
+  <button onclick="location.reload()">HAUNT AGAIN</button>
+</div>
+
+<div class="hint">A EUDAIMON CREATION &middot; HOLD FOR THE CROWN</div>
+
+<script type="module">
+import * as THREE from 'three';
+
+// ═══ CURSOR ════════════════════════════════════════════════════════════
+const cursor = document.getElementById('cursor');
+document.addEventListener('mousemove', e => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+
+// ═══ SCENE ═════════════════════════════════════════════════════════════
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x1a0d2e, 0.025);
+
+const camera = new THREE.PerspectiveCamera(70, window.innerWidth/window.innerHeight, 0.1, 200);
+
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.9;
+document.getElementById('game').appendChild(renderer.domElement);
+
+// ═══ LIGHTING ══════════════════════════════════════════════════════════
+scene.add(new THREE.AmbientLight(0x3d2a5a, 0.4));
+
+const moonLight = new THREE.DirectionalLight(0x8a6db8, 0.8);
+moonLight.position.set(20, 30, 10);
+moonLight.castShadow = true;
+moonLight.shadow.mapSize.set(1024, 1024);
+moonLight.shadow.camera.left = -30;
+moonLight.shadow.camera.right = 30;
+moonLight.shadow.camera.top = 30;
+moonLight.shadow.camera.bottom = -30;
+scene.add(moonLight);
+
+// Eerie purple point light following King Boo
+const auraLight = new THREE.PointLight(0xb794f6, 1.5, 12);
+scene.add(auraLight);
+
+// ═══ MANSION FLOOR ═════════════════════════════════════════════════════
+const floorGeo = new THREE.PlaneGeometry(80, 80, 16, 16);
+const floorMat = new THREE.MeshStandardMaterial({
+    color: 0x2a1a3a, roughness: 0.85, metalness: 0.1
+});
+const floor = new THREE.Mesh(floorGeo, floorMat);
+floor.rotation.x = -Math.PI / 2;
+floor.receiveShadow = true;
+scene.add(floor);
+
+// Checkered tiles overlay (decorative)
+const tileGroup = new THREE.Group();
+for (let i = -8; i < 8; i++) {
+    for (let j = -8; j < 8; j++) {
+        if ((i + j) % 2 !== 0) continue;
+        const t = new THREE.Mesh(
+            new THREE.PlaneGeometry(4.8, 4.8),
+            new THREE.MeshStandardMaterial({ color: 0x382548, roughness: 0.95 })
+        );
+        t.rotation.x = -Math.PI / 2;
+        t.position.set(i * 5 + 2.5, 0.01, j * 5 + 2.5);
+        t.receiveShadow = true;
+        tileGroup.add(t);
+    }
+}
+scene.add(tileGroup);
+
+// ═══ WALLS ═════════════════════════════════════════════════════════════
+const wallMat = new THREE.MeshStandardMaterial({ color: 0x1f1230, roughness: 0.9 });
+const wallH = 8;
+const walls = [
+    [40, wallH, 1, 0, wallH/2, -40],
+    [40, wallH, 1, 0, wallH/2,  40],
+    [1, wallH, 80, -40, wallH/2, 0],
+    [1, wallH, 80,  40, wallH/2, 0]
+];
+walls.forEach(([w,h,d,x,y,z]) => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(w*2, h, d*2), wallMat);
+    m.position.set(x, y, z);
+    m.receiveShadow = true;
+    scene.add(m);
+});
+
+// ═══ COLUMNS (decorative, also obstacles) ══════════════════════════════
+function makeColumn(x, z) {
+    const g = new THREE.Group();
+    const shaft = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.6, 0.6, 7, 16),
+        new THREE.MeshStandardMaterial({ color: 0x4a3260, roughness: 0.7 })
+    );
+    shaft.position.y = 3.5;
+    shaft.castShadow = true; shaft.receiveShadow = true;
+    g.add(shaft);
+    const cap = new THREE.Mesh(
+        new THREE.BoxGeometry(1.6, 0.4, 1.6),
+        new THREE.MeshStandardMaterial({ color: 0x6b46c1, roughness: 0.6 })
+    );
+    cap.position.y = 7.2;
+    cap.castShadow = true;
+    g.add(cap);
+    g.position.set(x, 0, z);
+    return g;
+}
+
+const columns = [];
+const colCoords = [
+    [-15, -15], [15, -15], [-15, 15], [15, 15],
+    [-25, 0], [25, 0], [0, -25], [0, 25]
+];
+colCoords.forEach(([x,z]) => { const c = makeColumn(x,z); scene.add(c); columns.push({x, z, r: 0.8}); });
+
+// ═══ JACK-O-LANTERNS ═══════════════════════════════════════════════════
+function makeJackO(x, z) {
+    const g = new THREE.Group();
+    const pumpkin = new THREE.Mesh(
+        new THREE.SphereGeometry(0.6, 12, 12),
+        new THREE.MeshStandardMaterial({ color: 0xff6600, emissive: 0xff3300, emissiveIntensity: 0.4, roughness: 0.6 })
+    );
+    pumpkin.scale.y = 0.85;
+    pumpkin.castShadow = true;
+    g.add(pumpkin);
+    const stem = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.08, 0.1, 0.3, 6),
+        new THREE.MeshStandardMaterial({ color: 0x4a7c2a })
+    );
+    stem.position.y = 0.6;
+    g.add(stem);
+    const flame = new THREE.PointLight(0xffaa44, 1.0, 6);
+    flame.position.y = 0;
+    g.add(flame);
+    g.userData.flame = flame;
+    g.position.set(x, 0.5, z);
+    return g;
+}
+
+const jackos = [];
+[[-20,-20],[20,-20],[-20,20],[20,20],[0,0],[-12,8],[12,-8]].forEach(([x,z]) => {
+    const j = makeJackO(x,z); scene.add(j); jackos.push(j);
+});
+
+// ═══ KING BOO ══════════════════════════════════════════════════════════
+const kingBoo = new THREE.Group();
+
+const booBody = new THREE.Mesh(
+    new THREE.SphereGeometry(1.3, 24, 24),
+    new THREE.MeshStandardMaterial({
+        color: 0xfafafa, emissive: 0x9c7fdc, emissiveIntensity: 0.25,
+        transparent: true, opacity: 0.92, roughness: 0.1, metalness: 0
+    })
+);
+booBody.scale.set(1, 0.95, 1);
+booBody.castShadow = true;
+kingBoo.add(booBody);
+
+// Eyes (mischievous angled)
+function makeEye(side) {
+    const g = new THREE.Group();
+    const black = new THREE.Mesh(
+        new THREE.SphereGeometry(0.18, 12, 12),
+        new THREE.MeshBasicMaterial({ color: 0x000000 })
+    );
+    g.add(black);
+    const shine = new THREE.Mesh(
+        new THREE.SphereGeometry(0.06, 8, 8),
+        new THREE.MeshBasicMaterial({ color: 0xffffff })
+    );
+    shine.position.set(0.05, 0.05, 0.13);
+    g.add(shine);
+    g.position.set(0.32 * side, 0.25, 0.95);
+    g.rotation.z = -0.18 * side; // angry/mischievous slant
+    return g;
+}
+kingBoo.add(makeEye(-1), makeEye(1));
+
+// Mouth + tongue
+const mouthGroup = new THREE.Group();
+mouthGroup.position.set(0, -0.18, 1.05);
+const mouth = new THREE.Mesh(
+    new THREE.SphereGeometry(0.25, 12, 12, 0, Math.PI*2, 0, Math.PI/2),
+    new THREE.MeshStandardMaterial({ color: 0x4a0e0e, side: THREE.DoubleSide })
+);
+mouth.rotation.x = Math.PI;
+mouth.scale.set(1.4, 0.7, 0.6);
+mouthGroup.add(mouth);
+
+const tongue = new THREE.Mesh(
+    new THREE.CapsuleGeometry(0.15, 0.4, 4, 8),
+    new THREE.MeshStandardMaterial({ color: 0xff5577, emissive: 0xaa2244, emissiveIntensity: 0.4, roughness: 0.3 })
+);
+tongue.position.set(0, -0.15, 0.18);
+tongue.rotation.x = Math.PI / 2;
+tongue.scale.set(1, 0.3, 1); // initial short
+tongue.castShadow = true;
+mouthGroup.add(tongue);
+kingBoo.add(mouthGroup);
+
+// Crown (gold cone with gems)
+const crownGroup = new THREE.Group();
+crownGroup.position.set(0, 1.25, 0);
+const crownBase = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.55, 0.7, 0.25, 16),
+    new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.9, roughness: 0.2, emissive: 0xb8860b, emissiveIntensity: 0.3 })
+);
+crownGroup.add(crownBase);
+
+// Crown spikes
+for (let i = 0; i < 5; i++) {
+    const angle = (i / 5) * Math.PI * 2;
+    const spike = new THREE.Mesh(
+        new THREE.ConeGeometry(0.12, 0.4, 8),
+        new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.9, roughness: 0.2 })
+    );
+    spike.position.set(Math.cos(angle) * 0.55, 0.27, Math.sin(angle) * 0.55);
+    crownGroup.add(spike);
+    // Gem on tip
+    const gem = new THREE.Mesh(
+        new THREE.SphereGeometry(0.07, 8, 8),
+        new THREE.MeshStandardMaterial({ color: i % 2 ? 0xff3366 : 0x66ccff, emissive: i % 2 ? 0xaa0033 : 0x0066aa, emissiveIntensity: 0.6 })
+    );
+    gem.position.copy(spike.position);
+    gem.position.y += 0.2;
+    crownGroup.add(gem);
+}
+crownBase.castShadow = true;
+kingBoo.add(crownGroup);
+
+// Tail wisps (semi-transparent spheres trailing)
+const tailWisps = [];
+for (let i = 0; i < 3; i++) {
+    const w = new THREE.Mesh(
+        new THREE.SphereGeometry(0.5 - i * 0.1, 12, 12),
+        new THREE.MeshStandardMaterial({
+            color: 0xfafafa, transparent: true, opacity: 0.4 - i * 0.1,
+            emissive: 0x9c7fdc, emissiveIntensity: 0.2
+        })
+    );
+    w.position.set(0, -0.5 - i * 0.3, -0.4 - i * 0.3);
+    kingBoo.add(w);
+    tailWisps.push(w);
+}
+
+kingBoo.position.set(0, 2, 5);
+scene.add(kingBoo);
+
+// ═══ MARIO NPCs ════════════════════════════════════════════════════════
+function makeMario(x, z, isLuigi = false) {
+    const g = new THREE.Group();
+    // Overalls (blue cube)
+    const overalls = new THREE.Mesh(
+        new THREE.BoxGeometry(0.7, 0.7, 0.7),
+        new THREE.MeshStandardMaterial({ color: 0x1e3a8a })
+    );
+    overalls.position.y = 0.35;
+    overalls.castShadow = true;
+    g.add(overalls);
+    // Shirt
+    const shirt = new THREE.Mesh(
+        new THREE.BoxGeometry(0.75, 0.3, 0.75),
+        new THREE.MeshStandardMaterial({ color: isLuigi ? 0x16a34a : 0xdc2626 })
+    );
+    shirt.position.y = 0.85;
+    shirt.castShadow = true;
+    g.add(shirt);
+    // Head
+    const head = new THREE.Mesh(
+        new THREE.BoxGeometry(0.6, 0.6, 0.6),
+        new THREE.MeshStandardMaterial({ color: 0xffd4a8 })
+    );
+    head.position.y = 1.3;
+    head.castShadow = true;
+    g.add(head);
+    // Hat
+    const hat = new THREE.Mesh(
+        new THREE.BoxGeometry(0.7, 0.25, 0.7),
+        new THREE.MeshStandardMaterial({ color: isLuigi ? 0x16a34a : 0xdc2626 })
+    );
+    hat.position.y = 1.7;
+    hat.castShadow = true;
+    g.add(hat);
+    // Mustache
+    const mustache = new THREE.Mesh(
+        new THREE.BoxGeometry(0.45, 0.1, 0.05),
+        new THREE.MeshStandardMaterial({ color: 0x000000 })
+    );
+    mustache.position.set(0, 1.25, 0.32);
+    g.add(mustache);
+    // Eyes
+    [-0.15, 0.15].forEach(ex => {
+        const eye = new THREE.Mesh(
+            new THREE.BoxGeometry(0.08, 0.18, 0.05),
+            new THREE.MeshBasicMaterial({ color: 0x000000 })
+        );
+        eye.position.set(ex, 1.4, 0.31);
+        g.add(eye);
+    });
+
+    g.position.set(x, 0, z);
+    g.userData = {
+        type: 'mario',
+        state: 'wander',
+        target: new THREE.Vector3(x, 0, z),
+        wanderTimer: 0,
+        scared: false,
+        scaredTimer: 0,
+        isLuigi,
+        captured: false,
+        speed: isLuigi ? 0.06 : 0.05,
+        speakBubble: null,
+        speakTimer: 0,
+        baseY: 0
+    };
+    return g;
+}
+
+const marios = [];
+const NUM_MARIOS = 8;
+for (let i = 0; i < NUM_MARIOS; i++) {
+    const angle = (i / NUM_MARIOS) * Math.PI * 2;
+    const r = 18 + Math.random() * 8;
+    const m = makeMario(Math.cos(angle) * r, Math.sin(angle) * r, i % 3 === 0);
+    scene.add(m);
+    marios.push(m);
+}
+
+// ═══ INPUT ═════════════════════════════════════════════════════════════
+const keys = {};
+let mouseYaw = 0, mousePitch = -0.1;
+let mouseLocked = false;
+window.addEventListener('keydown', e => keys[e.code] = true);
+window.addEventListener('keyup',   e => keys[e.code] = false);
+renderer.domElement.addEventListener('click', () => {
+    if (!gameStarted) return;
+    renderer.domElement.requestPointerLock();
+});
+document.addEventListener('pointerlockchange', () => {
+    mouseLocked = (document.pointerLockElement === renderer.domElement);
+});
+document.addEventListener('mousemove', e => {
+    if (!mouseLocked) return;
+    mouseYaw   -= e.movementX * 0.0025;
+    mousePitch -= e.movementY * 0.0025;
+    mousePitch = Math.max(-1.0, Math.min(0.4, mousePitch));
+});
+
+// ═══ STATE ═════════════════════════════════════════════════════════════
+let scaresScore = 0, ghostsScore = 0;
+let mariosLeft = NUM_MARIOS;
+let invisible = false;
+let invisCooldown = 0; // ms remaining of cooldown (0 = ready)
+let invisActive = 0;   // ms remaining of active vanish
+let tongueCooldown = 0;
+let tongueActive = 0;
+let dashCooldown = 0;
+let dashActive = 0;
+const TONGUE_CD = 600;
+const TONGUE_DUR = 280;
+const VANISH_CD = 6000;
+const VANISH_DUR = 2500;
+const DASH_CD = 1800;
+const DASH_DUR = 280;
+
+let velocity = new THREE.Vector3();
+const tmpDir = new THREE.Vector3();
+const tmpForward = new THREE.Vector3();
+const tmpRight = new THREE.Vector3();
+
+let gameStarted = false;
+let lastTime = performance.now();
+
+// ═══ HUD HELPERS ═══════════════════════════════════════════════════════
+function setBar(id, pct) { document.getElementById(id).style.width = pct + '%'; }
+function showPopup(text, x, y, color = '#ffd700') {
+    const p = document.createElement('div');
+    p.className = 'popup';
+    p.textContent = text;
+    p.style.left = x + 'px'; p.style.top = y + 'px';
+    p.style.color = color;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1400);
+}
+function worldToScreen(pos3) {
+    const v = pos3.clone().project(camera);
+    return { x: (v.x + 1) * window.innerWidth / 2, y: (1 - v.y) * window.innerHeight / 2 };
+}
+
+// ═══ MARIO SPEECH BUBBLE (DOM overlay) ═════════════════════════════════
+function spawnSpeech(mario, text) {
+    const el = document.createElement('div');
+    el.style.cssText = `position:absolute;font-family:'Press Start 2P',monospace;font-size:11px;color:#fff;background:rgba(220,38,38,0.95);padding:6px 10px;border:2px solid #fff;border-radius:6px;pointer-events:none;z-index:5;letter-spacing:1px;text-shadow:1px 1px 0 #000`;
+    el.textContent = text;
+    document.body.appendChild(el);
+    mario.userData.speakBubble = el;
+    mario.userData.speakTimer = 1800;
+}
+
+// ═══ COLLISION HELPERS ═════════════════════════════════════════════════
+function avoidColumns(pos, prev) {
+    for (const c of columns) {
+        const dx = pos.x - c.x, dz = pos.z - c.z;
+        const d2 = dx*dx + dz*dz;
+        const minD = c.r + 1.4;
+        if (d2 < minD*minD) {
+            const d = Math.sqrt(d2) || 0.001;
+            pos.x = c.x + (dx / d) * minD;
+            pos.z = c.z + (dz / d) * minD;
+        }
+    }
+    pos.x = Math.max(-38, Math.min(38, pos.x));
+    pos.z = Math.max(-38, Math.min(38, pos.z));
+}
+
+// ═══ GAME LOOP ═════════════════════════════════════════════════════════
+function tick(now) {
+    requestAnimationFrame(tick);
+    const dt = Math.min(50, now - lastTime);
+    lastTime = now;
+    if (!gameStarted) { renderer.render(scene, camera); return; }
+
+    // ── Cooldowns ─────────────────────────────────────────────────────
+    invisCooldown   = Math.max(0, invisCooldown - dt);
+    invisActive    = Math.max(0, invisActive - dt);
+    tongueCooldown = Math.max(0, tongueCooldown - dt);
+    tongueActive   = Math.max(0, tongueActive - dt);
+    dashCooldown   = Math.max(0, dashCooldown - dt);
+    dashActive     = Math.max(0, dashActive - dt);
+    if (invisActive === 0) invisible = false;
+
+    // HUD bars (show 0→100% as cooldown elapses)
+    setBar('cd-tongue', tongueCooldown ? (1 - tongueCooldown / TONGUE_CD) * 100 : 100);
+    setBar('cd-vanish', invisCooldown ? (1 - invisCooldown / VANISH_CD) * 100 : 100);
+    setBar('cd-dash',   dashCooldown ? (1 - dashCooldown / DASH_CD) * 100 : 100);
+
+    // ── King Boo movement ─────────────────────────────────────────────
+    tmpForward.set(Math.sin(mouseYaw), 0, Math.cos(mouseYaw));
+    tmpRight.set(Math.cos(mouseYaw), 0, -Math.sin(mouseYaw));
+    tmpDir.set(0, 0, 0);
+    if (keys['KeyW']) tmpDir.add(tmpForward.clone().multiplyScalar(-1));
+    if (keys['KeyS']) tmpDir.add(tmpForward);
+    if (keys['KeyA']) tmpDir.add(tmpRight.clone().multiplyScalar(-1));
+    if (keys['KeyD']) tmpDir.add(tmpRight);
+
+    let speed = 0.012;
+    if (dashActive > 0) speed = 0.05;
+
+    if (tmpDir.lengthSq() > 0.001) {
+        tmpDir.normalize().multiplyScalar(speed * dt);
+        velocity.lerp(tmpDir, 0.25);
+    } else {
+        velocity.multiplyScalar(0.85);
+    }
+
+    if (keys['ShiftLeft'] || keys['ShiftRight']) {
+        if (dashCooldown === 0 && tmpDir.lengthSq() > 0.001) {
+            dashActive = DASH_DUR; dashCooldown = DASH_CD;
+        }
+    }
+
+    const prev = kingBoo.position.clone();
+    kingBoo.position.add(velocity);
+    avoidColumns(kingBoo.position, prev);
+
+    // Floating bob
+    const bob = Math.sin(now * 0.003) * 0.18;
+    kingBoo.position.y = 1.8 + bob;
+
+    // Boo faces movement direction (smoothed)
+    if (velocity.lengthSq() > 0.0001) {
+        const targetYaw = Math.atan2(velocity.x, velocity.z);
+        kingBoo.rotation.y += ((targetYaw - kingBoo.rotation.y + Math.PI*3) % (Math.PI*2) - Math.PI) * 0.12;
+    }
+
+    // Crown floats slightly
+    crownGroup.position.y = 1.25 + Math.sin(now * 0.004) * 0.04;
+    crownGroup.rotation.y += dt * 0.0006;
+
+    // Tail wisps trail behind
+    tailWisps.forEach((w, i) => {
+        const t = now * 0.005 + i;
+        w.position.x = Math.sin(t) * 0.15;
+        w.position.y = -0.5 - i * 0.3 + Math.sin(t * 1.5) * 0.05;
+    });
+
+    // ── Tongue ────────────────────────────────────────────────────────
+    if (keys['Space'] && tongueCooldown === 0) {
+        tongueActive = TONGUE_DUR; tongueCooldown = TONGUE_CD;
+    }
+    if (tongueActive > 0) {
+        const t = 1 - tongueActive / TONGUE_DUR;
+        // anticipation → extend → retract
+        const ext = t < 0.3 ? t * 0.5 : t < 0.7 ? 5 : 5 - (t - 0.7) * 16;
+        tongue.scale.z = Math.max(0.3, Math.min(8, ext));
+        tongue.position.z = 0.18 + tongue.scale.z * 0.3;
+    } else {
+        tongue.scale.z = 0.3;
+        tongue.position.z = 0.18;
+    }
+
+    // ── Vanish ────────────────────────────────────────────────────────
+    if (keys['KeyE'] && invisCooldown === 0 && invisActive === 0) {
+        invisActive = VANISH_DUR; invisCooldown = VANISH_CD; invisible = true;
+    }
+    booBody.material.opacity = invisible ? 0.18 : 0.92;
+    tailWisps.forEach(w => w.material.opacity = invisible ? 0.08 : (0.4 - tailWisps.indexOf(w) * 0.1));
+
+    // ── Aura light follows ────────────────────────────────────────────
+    auraLight.position.copy(kingBoo.position);
+    auraLight.position.y += 0.5;
+    auraLight.intensity = invisible ? 0.4 : 1.5;
+
+    // ── Camera follows King Boo (3rd person) ──────────────────────────
+    const camOffsetDist = 7;
+    const camHeight = 3 + Math.sin(mousePitch) * 4;
+    const camTargetX = kingBoo.position.x + Math.sin(mouseYaw) * camOffsetDist;
+    const camTargetY = kingBoo.position.y + camHeight;
+    const camTargetZ = kingBoo.position.z + Math.cos(mouseYaw) * camOffsetDist;
+    camera.position.lerp(new THREE.Vector3(camTargetX, camTargetY, camTargetZ), 0.15);
+    camera.lookAt(kingBoo.position.x, kingBoo.position.y + 0.5, kingBoo.position.z);
+
+    // ── Marios AI ─────────────────────────────────────────────────────
+    const tongueWorldTip = tongueActive > 0 ?
+        new THREE.Vector3(0, -0.15, 0.18 + tongue.scale.z * 0.6).applyMatrix4(mouthGroup.matrixWorld)
+        : null;
+
+    marios.forEach(m => {
+        if (m.userData.captured) return;
+        const dx = kingBoo.position.x - m.position.x;
+        const dz = kingBoo.position.z - m.position.z;
+        const distToBoo = Math.sqrt(dx*dx + dz*dz);
+
+        // Wander or scared
+        if (m.userData.scared) {
+            m.userData.scaredTimer -= dt;
+            // Run AWAY from King Boo
+            const awayX = -dx / (distToBoo || 1);
+            const awayZ = -dz / (distToBoo || 1);
+            m.position.x += awayX * m.userData.speed * 1.8 * dt * 0.06;
+            m.position.z += awayZ * m.userData.speed * 1.8 * dt * 0.06;
+            m.rotation.y = Math.atan2(awayX, awayZ);
+            // Body shake
+            m.position.y = Math.sin(now * 0.05) * 0.08;
+            if (m.userData.scaredTimer <= 0) {
+                m.userData.scared = false;
+                m.userData.state = 'wander';
+                m.position.y = 0;
+            }
+        } else {
+            // Wander
+            m.userData.wanderTimer -= dt;
+            if (m.userData.wanderTimer <= 0) {
+                m.userData.target.set(
+                    (Math.random() - 0.5) * 60,
+                    0,
+                    (Math.random() - 0.5) * 60
+                );
+                m.userData.wanderTimer = 2000 + Math.random() * 3000;
+            }
+            const tdx = m.userData.target.x - m.position.x;
+            const tdz = m.userData.target.z - m.position.z;
+            const td = Math.sqrt(tdx*tdx + tdz*tdz);
+            if (td > 0.5) {
+                m.position.x += (tdx / td) * m.userData.speed * dt * 0.06;
+                m.position.z += (tdz / td) * m.userData.speed * dt * 0.06;
+                m.rotation.y = Math.atan2(tdx, tdz);
+            }
+
+            // Detect King Boo (line-of-sight cone, only if visible)
+            if (!invisible && distToBoo < 7) {
+                m.userData.scared = true;
+                m.userData.scaredTimer = 1800 + Math.random() * 800;
+                m.userData.state = 'scared';
+                scaresScore += 5;
+                document.getElementById('score-scares').textContent = scaresScore;
+                const scs = worldToScreen(new THREE.Vector3(m.position.x, m.position.y + 2.5, m.position.z));
+                showPopup('+5', scs.x, scs.y, '#ff6677');
+                spawnSpeech(m, m.userData.isLuigi ? 'AAAH!' : 'MAMA MIA!');
+            }
+        }
+
+        // Tongue hit detection
+        if (tongueWorldTip) {
+            const ddx = m.position.x - tongueWorldTip.x;
+            const ddz = m.position.z - tongueWorldTip.z;
+            if (ddx*ddx + ddz*ddz < 1.6) {
+                // CAPTURED
+                m.userData.captured = true;
+                ghostsScore += 100;
+                mariosLeft -= 1;
+                document.getElementById('score-ghosts').textContent = ghostsScore;
+                document.getElementById('marios-left').textContent = mariosLeft;
+                const scp = worldToScreen(new THREE.Vector3(m.position.x, m.position.y + 2.5, m.position.z));
+                showPopup('+100 GHOST!', scp.x, scp.y, '#b794f6');
+                // Transform Mario into a small ghost (white sphere with eyes), float up and fade
+                m.userData.fadeIn = 0;
+                m.userData.captureTime = now;
+                m.children.forEach(c => {
+                    if (c.material) {
+                        c.material = new THREE.MeshStandardMaterial({
+                            color: 0xfafafa, transparent: true, opacity: 0.7,
+                            emissive: 0xb794f6, emissiveIntensity: 0.4
+                        });
+                    }
+                });
+
+                if (mariosLeft === 0) winGame();
+            }
+        }
+
+        // Update speech bubble position
+        if (m.userData.speakBubble) {
+            m.userData.speakTimer -= dt;
+            if (m.userData.speakTimer <= 0) {
+                m.userData.speakBubble.remove();
+                m.userData.speakBubble = null;
+            } else {
+                const sp = worldToScreen(new THREE.Vector3(m.position.x, m.position.y + 2.4, m.position.z));
+                m.userData.speakBubble.style.left = (sp.x - 35) + 'px';
+                m.userData.speakBubble.style.top  = (sp.y - 30) + 'px';
+            }
+        }
+    });
+
+    // ── Captured Marios float upward and despawn ──────────────────────
+    marios.forEach(m => {
+        if (m.userData.captured) {
+            m.position.y += 0.04 * dt * 0.06 * 16;
+            m.rotation.y += 0.06;
+            const age = now - m.userData.captureTime;
+            const opa = Math.max(0, 1 - age / 2400);
+            m.children.forEach(c => { if (c.material) c.material.opacity = opa * 0.7; });
+            if (age > 2400 && m.parent) scene.remove(m);
+        }
+    });
+
+    // ── Jack-o-lantern flicker ────────────────────────────────────────
+    jackos.forEach((j, i) => {
+        if (j.userData.flame) j.userData.flame.intensity = 0.6 + Math.sin(now * 0.01 + i) * 0.4;
+    });
+
+    renderer.render(scene, camera);
+}
+requestAnimationFrame(tick);
+
+// ═══ START / WIN ════════════════════════════════════════════════════════
+document.getElementById('start-btn').addEventListener('click', () => {
+    document.getElementById('title').classList.add('hidden');
+    gameStarted = true;
+    renderer.domElement.requestPointerLock();
+});
+
+function winGame() {
+    setTimeout(() => {
+        document.getElementById('win-screen').classList.add('show');
+        document.getElementById('win-score').textContent =
+            `SCARES · ${scaresScore} · GHOSTS · ${ghostsScore}`;
+        document.exitPointerLock();
+    }, 1200);
+}
+
+// ═══ RESIZE ═════════════════════════════════════════════════════════════
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>
