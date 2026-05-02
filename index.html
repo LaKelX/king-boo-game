@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>KING BOO · Royal Haunting</title>
+<title>KING BOO · Royal Haunting · Cinematic Edition</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Press+Start+2P&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
@@ -25,21 +25,21 @@
   .hud.tr{top:18px;right:20px;text-align:right}
   .hud.bl{bottom:18px;left:20px;font-size:9px;line-height:1.7;text-shadow:0 0 6px #6b46c1}
   .hud.br{bottom:18px;right:20px;text-align:right;font-size:9px;line-height:1.7;text-shadow:0 0 6px #6b46c1}
-
   .crown{display:inline-block;color:#ffd700;text-shadow:0 0 6px #ffd700;margin-right:4px}
 
   /* Cooldown bar */
   .cd-row{display:flex;align-items:center;gap:6px;margin-top:6px}
   .cd-label{font-size:8px;color:#cfb0ff}
-  .cd-bar{width:80px;height:6px;border:1px solid #7c3aed;background:rgba(0,0,0,0.5);border-radius:2px;overflow:hidden}
-  .cd-fill{height:100%;background:linear-gradient(90deg,#b794f6,#7c3aed);transition:width 0.05s linear}
+  .cd-bar{width:90px;height:6px;border:1px solid #7c3aed;background:rgba(0,0,0,0.5);border-radius:2px;overflow:hidden;position:relative}
+  .cd-fill{height:100%;background:linear-gradient(90deg,#b794f6,#7c3aed);transition:width 0.05s linear;box-shadow:0 0 4px #b794f6}
 
   /* Title screen */
   .title-screen{position:fixed;inset:0;background:radial-gradient(ellipse at center,#1a0d2e 0%,#000 80%);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:default}
   .title-screen.hidden{display:none}
   .title-screen h1{font-family:'Press Start 2P',monospace;font-size:54px;color:#fff;text-shadow:0 0 20px #b794f6,0 0 40px #7c3aed,0 0 60px #6b21a8;letter-spacing:8px;margin-bottom:18px;animation:title-float 3s ease-in-out infinite}
   .title-screen h1 .crown{font-size:48px;animation:crown-bob 1.4s ease-in-out infinite}
-  .title-screen .subtitle{font-family:'Cinzel',serif;font-size:18px;color:#cfb0ff;letter-spacing:6px;margin-bottom:42px;opacity:0.85}
+  .title-screen .subtitle{font-family:'Cinzel',serif;font-size:18px;color:#cfb0ff;letter-spacing:6px;margin-bottom:8px;opacity:0.85}
+  .title-screen .edition{font-family:'Cinzel',serif;font-size:11px;color:#ffd700;letter-spacing:8px;margin-bottom:42px;opacity:0.7}
   .title-screen .controls{display:grid;grid-template-columns:auto auto;gap:8px 24px;font-family:'Press Start 2P',monospace;font-size:10px;color:#cfb0ff;margin-bottom:42px;line-height:2}
   .title-screen .controls .key{color:#ffd700;text-shadow:0 0 8px #ffd700}
   .title-screen .start{padding:18px 36px;background:rgba(123,58,237,0.2);border:2px solid #b794f6;color:#fff;font-family:'Press Start 2P',monospace;font-size:14px;letter-spacing:2px;cursor:pointer;border-radius:4px;text-shadow:0 0 8px #b794f6;animation:start-pulse 1.6s ease-in-out infinite}
@@ -53,12 +53,12 @@
   .popup{position:absolute;font-family:'Press Start 2P',monospace;font-size:14px;color:#ffd700;text-shadow:0 0 8px #ffd700,0 0 16px #ff8c00;pointer-events:none;animation:popup-rise 1.4s ease-out forwards;z-index:5}
   @keyframes popup-rise{0%{opacity:0;transform:translateY(0) scale(0.6)}20%{opacity:1;transform:translateY(-10px) scale(1.2)}100%{opacity:0;transform:translateY(-80px) scale(0.9)}}
 
-  /* Custom cursor (crown) */
+  /* Custom cursor */
   #cursor{position:fixed;width:0;height:0;pointer-events:none;z-index:200;transform:translate(-50%,-50%)}
   #cursor::before{content:'♕';position:absolute;left:0;top:0;transform:translate(-50%,-50%);color:#ffd700;font-size:18px;text-shadow:0 0 8px #ffd700}
 
   /* Win screen */
-  .win-screen{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99;display:none;flex-direction:column;align-items:center;justify-content:center;cursor:default}
+  .win-screen{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99;display:none;flex-direction:column;align-items:center;justify-content:center;cursor:default;backdrop-filter:blur(8px)}
   .win-screen.show{display:flex}
   .win-screen h2{font-family:'Press Start 2P',monospace;font-size:44px;color:#ffd700;text-shadow:0 0 16px #ffd700,0 0 32px #ff8c00;margin-bottom:28px;letter-spacing:4px}
   .win-screen .score-final{font-family:'Press Start 2P',monospace;font-size:18px;color:#cfb0ff;margin-bottom:32px;letter-spacing:2px}
@@ -66,6 +66,10 @@
 
   /* Bottom hint */
   .hint{position:fixed;left:50%;transform:translateX(-50%);bottom:8px;font-family:'Press Start 2P',monospace;font-size:7px;letter-spacing:2px;color:rgba(207,176,255,0.4);z-index:5}
+
+  /* Loading shader notice */
+  .loading{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);font-family:'Press Start 2P',monospace;font-size:12px;color:#b794f6;letter-spacing:3px;z-index:90;text-shadow:0 0 8px #b794f6;display:none}
+  .loading.show{display:block}
 </style>
 </head>
 <body>
@@ -100,6 +104,7 @@
 <div class="title-screen" id="title">
   <h1><span class="crown">♕</span>KING BOO</h1>
   <div class="subtitle">ROYAL HAUNTING</div>
+  <div class="edition">CINEMATIC EDITION</div>
   <div class="controls">
     <span class="key">WASD</span><span>Float around the mansion</span>
     <span class="key">MOUSE</span><span>Rotate the royal gaze</span>
@@ -118,64 +123,319 @@
 </div>
 
 <div class="hint">A EUDAIMON CREATION &middot; HOLD FOR THE CROWN</div>
+<div class="loading" id="loading">SUMMONING THE MANSION...</div>
 
 <script type="module">
 import * as THREE from 'three';
+import { EffectComposer }   from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass }       from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass }  from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass }       from 'three/addons/postprocessing/OutputPass.js';
+import { ShaderPass }       from 'three/addons/postprocessing/ShaderPass.js';
+import { SSAOPass }         from 'three/addons/postprocessing/SSAOPass.js';
+import { RoomEnvironment }  from 'three/addons/environments/RoomEnvironment.js';
+
+// ═══════════════════════════════════════════════════════════════════════
+//  AUDIO ENGINE — Web Audio synthesized haunted soundscape
+// ═══════════════════════════════════════════════════════════════════════
+class AudioEngine {
+    constructor(){ this.ctx = null; this.master = null; this.ambientStarted = false; }
+    init() {
+        if (this.ctx) return;
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        this.master = this.ctx.createGain();
+        this.master.gain.value = 0.5;
+        this.master.connect(this.ctx.destination);
+    }
+    startAmbient() {
+        if (!this.ctx || this.ambientStarted) return;
+        this.ambientStarted = true;
+        // 3 detuned oscillators forming a haunted minor chord
+        const freqs = [55, 73.42, 87.31]; // A1, D2, F2 (A minor-ish)
+        freqs.forEach((f, i) => {
+            const osc = this.ctx.createOscillator();
+            osc.type  = i === 1 ? 'sawtooth' : 'sine';
+            osc.frequency.value = f;
+            const g   = this.ctx.createGain();
+            g.gain.value = 0.04;
+            // Tremolo LFO
+            const lfo = this.ctx.createOscillator();
+            lfo.frequency.value = 0.15 + Math.random() * 0.25;
+            const lfoGain = this.ctx.createGain();
+            lfoGain.gain.value = 0.025;
+            lfo.connect(lfoGain).connect(g.gain);
+            lfo.start();
+            // Low-pass for warmth
+            const filt = this.ctx.createBiquadFilter();
+            filt.type = 'lowpass';
+            filt.frequency.value = 700;
+            filt.Q.value = 0.5;
+            osc.connect(filt).connect(g).connect(this.master);
+            osc.start();
+        });
+        // Wind whoosh layer
+        const noise = this.makeNoise(12, true);
+        const filt = this.ctx.createBiquadFilter();
+        filt.type = 'bandpass';
+        filt.frequency.value = 200;
+        filt.Q.value = 0.5;
+        const g = this.ctx.createGain();
+        g.gain.value = 0.05;
+        const lfo = this.ctx.createOscillator();
+        lfo.frequency.value = 0.1;
+        const lfoGain = this.ctx.createGain();
+        lfoGain.gain.value = 0.04;
+        lfo.connect(lfoGain).connect(g.gain);
+        lfo.start();
+        noise.connect(filt).connect(g).connect(this.master);
+    }
+    makeNoise(seconds = 1, loop = false) {
+        const buf = this.ctx.createBuffer(1, this.ctx.sampleRate * seconds, this.ctx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < data.length; i++) data[i] = (Math.random() - 0.5) * 0.6;
+        const src = this.ctx.createBufferSource();
+        src.buffer = buf;
+        src.loop = loop;
+        src.start();
+        return src;
+    }
+    playTongue() {
+        if (!this.ctx) return;
+        const t = this.ctx.currentTime;
+        // whoosh+slap
+        const buf = this.ctx.createBuffer(1, this.ctx.sampleRate * 0.35, this.ctx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < data.length; i++) data[i] = (Math.random() - 0.5) * Math.pow(1 - i/data.length, 1.5);
+        const src = this.ctx.createBufferSource(); src.buffer = buf;
+        const filt = this.ctx.createBiquadFilter(); filt.type = 'bandpass';
+        filt.frequency.setValueAtTime(2200, t);
+        filt.frequency.exponentialRampToValueAtTime(350, t + 0.35);
+        filt.Q.value = 4;
+        const g = this.ctx.createGain();
+        g.gain.setValueAtTime(0.6, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+        src.connect(filt).connect(g).connect(this.master);
+        src.start(t);
+    }
+    playCapture() {
+        if (!this.ctx) return;
+        const t = this.ctx.currentTime;
+        // 3-note rising arpeggio bell
+        [880, 1320, 1760].forEach((freq, i) => {
+            const osc = this.ctx.createOscillator(); osc.type = 'triangle'; osc.frequency.value = freq;
+            const g = this.ctx.createGain();
+            const start = t + i * 0.08;
+            g.gain.setValueAtTime(0, start);
+            g.gain.linearRampToValueAtTime(0.35, start + 0.015);
+            g.gain.exponentialRampToValueAtTime(0.001, start + 0.5);
+            osc.connect(g).connect(this.master);
+            osc.start(start); osc.stop(start + 0.55);
+        });
+        // Sub bass thump
+        const sub = this.ctx.createOscillator(); sub.type = 'sine';
+        sub.frequency.setValueAtTime(120, t);
+        sub.frequency.exponentialRampToValueAtTime(40, t + 0.2);
+        const sg = this.ctx.createGain();
+        sg.gain.setValueAtTime(0.4, t);
+        sg.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+        sub.connect(sg).connect(this.master);
+        sub.start(t); sub.stop(t + 0.35);
+    }
+    playScream() {
+        if (!this.ctx) return;
+        const t = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator(); osc.type = 'sawtooth';
+        const f0 = 600 + Math.random() * 200;
+        osc.frequency.setValueAtTime(f0, t);
+        osc.frequency.exponentialRampToValueAtTime(180, t + 0.45);
+        const filt = this.ctx.createBiquadFilter(); filt.type = 'bandpass';
+        filt.frequency.value = 800; filt.Q.value = 2;
+        const g = this.ctx.createGain();
+        g.gain.setValueAtTime(0.18, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+        osc.connect(filt).connect(g).connect(this.master);
+        osc.start(t); osc.stop(t + 0.55);
+    }
+    playBooLaugh() {
+        if (!this.ctx) return;
+        const t = this.ctx.currentTime;
+        [560, 480, 600, 440].forEach((freq, i) => {
+            const osc = this.ctx.createOscillator(); osc.type = 'square';
+            osc.frequency.value = freq;
+            const start = t + i * 0.11;
+            const g = this.ctx.createGain();
+            g.gain.setValueAtTime(0, start);
+            g.gain.linearRampToValueAtTime(0.13, start + 0.015);
+            g.gain.exponentialRampToValueAtTime(0.001, start + 0.18);
+            const filt = this.ctx.createBiquadFilter(); filt.type = 'lowpass';
+            filt.frequency.value = 1100;
+            osc.connect(filt).connect(g).connect(this.master);
+            osc.start(start); osc.stop(start + 0.22);
+        });
+    }
+    playWhoosh() {
+        if (!this.ctx) return;
+        const t = this.ctx.currentTime;
+        const buf = this.ctx.createBuffer(1, this.ctx.sampleRate * 0.5, this.ctx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < data.length; i++) data[i] = (Math.random()-0.5) * Math.exp(-i/(data.length*0.4));
+        const src = this.ctx.createBufferSource(); src.buffer = buf;
+        const filt = this.ctx.createBiquadFilter(); filt.type = 'bandpass';
+        filt.frequency.setValueAtTime(300, t);
+        filt.frequency.exponentialRampToValueAtTime(1800, t + 0.5);
+        filt.Q.value = 3;
+        const g = this.ctx.createGain();
+        g.gain.setValueAtTime(0.35, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+        src.connect(filt).connect(g).connect(this.master);
+        src.start(t);
+    }
+    playLightning() {
+        if (!this.ctx) return;
+        const t = this.ctx.currentTime;
+        const buf = this.ctx.createBuffer(1, this.ctx.sampleRate * 0.7, this.ctx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < data.length; i++) data[i] = (Math.random()-0.5) * (1 - i/data.length);
+        const src = this.ctx.createBufferSource(); src.buffer = buf;
+        const filt = this.ctx.createBiquadFilter(); filt.type = 'highpass';
+        filt.frequency.value = 200;
+        const g = this.ctx.createGain();
+        g.gain.setValueAtTime(0.5, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
+        src.connect(filt).connect(g).connect(this.master);
+        src.start(t);
+    }
+}
+const audio = new AudioEngine();
 
 // ═══ CURSOR ════════════════════════════════════════════════════════════
 const cursor = document.getElementById('cursor');
 document.addEventListener('mousemove', e => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
 
-// ═══ SCENE ═════════════════════════════════════════════════════════════
-const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x1a0d2e, 0.025);
+// ═══ SCENE / CAMERA / RENDERER ═════════════════════════════════════════
+const scene  = new THREE.Scene();
+scene.background = new THREE.Color(0x05030a);
+scene.fog = new THREE.FogExp2(0x180a25, 0.028);
 
 const camera = new THREE.PerspectiveCamera(70, window.innerWidth/window.innerHeight, 0.1, 200);
 
-const renderer = new THREE.WebGLRenderer({ antialias:true });
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 0.9;
+renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
+renderer.toneMapping       = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.85;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
 document.getElementById('game').appendChild(renderer.domElement);
 
-// ═══ LIGHTING ══════════════════════════════════════════════════════════
-scene.add(new THREE.AmbientLight(0x3d2a5a, 0.4));
+// ═══ ENVIRONMENT (IBL) ═════════════════════════════════════════════════
+const pmremGenerator = new THREE.PMREMGenerator(renderer);
+scene.environment = pmremGenerator.fromScene(new RoomEnvironment(renderer), 0.04).texture;
 
-const moonLight = new THREE.DirectionalLight(0x8a6db8, 0.8);
-moonLight.position.set(20, 30, 10);
+// ═══ POST-PROCESSING ═══════════════════════════════════════════════════
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+
+// SSAO — depth in every crevice
+const ssaoPass = new SSAOPass(scene, camera, window.innerWidth, window.innerHeight);
+ssaoPass.kernelRadius = 0.6;
+ssaoPass.minDistance = 0.001;
+ssaoPass.maxDistance = 0.05;
+ssaoPass.output = SSAOPass.OUTPUT.Default;
+composer.addPass(ssaoPass);
+
+// Bloom — King Boo glows like a proper ghost
+const bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(window.innerWidth, window.innerHeight),
+    1.1, 0.55, 0.18
+);
+composer.addPass(bloomPass);
+
+// Chromatic aberration + film grain + vignette (custom shader pass)
+const cinematicShader = {
+    uniforms: {
+        tDiffuse: { value: null },
+        time:     { value: 0 },
+        chroma:   { value: 0.0028 },
+        grain:    { value: 0.045 },
+        vignette: { value: 1.4 }
+    },
+    vertexShader: `
+        varying vec2 vUv;
+        void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }
+    `,
+    fragmentShader: `
+        uniform sampler2D tDiffuse;
+        uniform float time, chroma, grain, vignette;
+        varying vec2 vUv;
+        float rnd(vec2 p){ return fract(sin(dot(p, vec2(12.9898,78.233))) * 43758.5453); }
+        void main(){
+            vec2 c = vUv - 0.5;
+            // Chromatic aberration scales with distance from center
+            float d = length(c);
+            vec2 dir = c / max(d, 0.0001);
+            vec3 col;
+            col.r = texture2D(tDiffuse, vUv - dir * chroma * d).r;
+            col.g = texture2D(tDiffuse, vUv).g;
+            col.b = texture2D(tDiffuse, vUv + dir * chroma * d).b;
+            // Film grain
+            float g = (rnd(vUv * (0.5 + fract(time))) - 0.5) * grain;
+            col += g;
+            // Vignette
+            float v = smoothstep(vignette * 0.5, vignette, d);
+            col *= 1.0 - v * 0.6;
+            // Subtle purple color grade in shadows
+            float lum = dot(col, vec3(0.299,0.587,0.114));
+            col = mix(col, col * vec3(0.92, 0.88, 1.05), 1.0 - lum);
+            gl_FragColor = vec4(col, 1.0);
+        }
+    `
+};
+const cinematicPass = new ShaderPass(cinematicShader);
+composer.addPass(cinematicPass);
+
+composer.addPass(new OutputPass());
+
+// ═══ LIGHTING ══════════════════════════════════════════════════════════
+scene.add(new THREE.AmbientLight(0x3d2a5a, 0.18));
+
+// Cold moonlight from above
+const moonLight = new THREE.DirectionalLight(0x8a6db8, 0.7);
+moonLight.position.set(20, 35, 12);
 moonLight.castShadow = true;
-moonLight.shadow.mapSize.set(1024, 1024);
-moonLight.shadow.camera.left = -30;
-moonLight.shadow.camera.right = 30;
-moonLight.shadow.camera.top = 30;
-moonLight.shadow.camera.bottom = -30;
+moonLight.shadow.mapSize.set(1536, 1536);
+moonLight.shadow.camera.left = -32;
+moonLight.shadow.camera.right = 32;
+moonLight.shadow.camera.top = 32;
+moonLight.shadow.camera.bottom = -32;
+moonLight.shadow.bias = -0.0008;
+moonLight.shadow.normalBias = 0.02;
 scene.add(moonLight);
 
-// Eerie purple point light following King Boo
-const auraLight = new THREE.PointLight(0xb794f6, 1.5, 12);
+// King Boo's aura
+const auraLight = new THREE.PointLight(0xb794f6, 2.2, 14, 1.4);
 scene.add(auraLight);
 
-// ═══ MANSION FLOOR ═════════════════════════════════════════════════════
-const floorGeo = new THREE.PlaneGeometry(80, 80, 16, 16);
+// ═══ FLOOR ═════════════════════════════════════════════════════════════
+const floorGeo = new THREE.PlaneGeometry(80, 80, 80, 80);
 const floorMat = new THREE.MeshStandardMaterial({
-    color: 0x2a1a3a, roughness: 0.85, metalness: 0.1
+    color: 0x1d1029, roughness: 0.55, metalness: 0.15,
+    envMapIntensity: 0.4
 });
 const floor = new THREE.Mesh(floorGeo, floorMat);
 floor.rotation.x = -Math.PI / 2;
 floor.receiveShadow = true;
 scene.add(floor);
 
-// Checkered tiles overlay (decorative)
+// Checkered tiles
 const tileGroup = new THREE.Group();
 for (let i = -8; i < 8; i++) {
     for (let j = -8; j < 8; j++) {
         if ((i + j) % 2 !== 0) continue;
         const t = new THREE.Mesh(
             new THREE.PlaneGeometry(4.8, 4.8),
-            new THREE.MeshStandardMaterial({ color: 0x382548, roughness: 0.95 })
+            new THREE.MeshStandardMaterial({ color: 0x2a1840, roughness: 0.85, metalness: 0.05 })
         );
         t.rotation.x = -Math.PI / 2;
         t.position.set(i * 5 + 2.5, 0.01, j * 5 + 2.5);
@@ -186,36 +446,102 @@ for (let i = -8; i < 8; i++) {
 scene.add(tileGroup);
 
 // ═══ WALLS ═════════════════════════════════════════════════════════════
-const wallMat = new THREE.MeshStandardMaterial({ color: 0x1f1230, roughness: 0.9 });
-const wallH = 8;
-const walls = [
-    [40, wallH, 1, 0, wallH/2, -40],
-    [40, wallH, 1, 0, wallH/2,  40],
-    [1, wallH, 80, -40, wallH/2, 0],
-    [1, wallH, 80,  40, wallH/2, 0]
-];
-walls.forEach(([w,h,d,x,y,z]) => {
+const wallMat = new THREE.MeshStandardMaterial({ color: 0x1a0e26, roughness: 0.85, metalness: 0.05 });
+[
+    [40, 8, 1,   0, 4, -40],
+    [40, 8, 1,   0, 4,  40],
+    [1, 8, 80, -40, 4,   0],
+    [1, 8, 80,  40, 4,   0]
+].forEach(([w,h,d,x,y,z]) => {
     const m = new THREE.Mesh(new THREE.BoxGeometry(w*2, h, d*2), wallMat);
     m.position.set(x, y, z);
-    m.receiveShadow = true;
+    m.receiveShadow = true; m.castShadow = true;
     scene.add(m);
 });
 
-// ═══ COLUMNS (decorative, also obstacles) ══════════════════════════════
+// ═══ STAINED GLASS WINDOWS ═════════════════════════════════════════════
+function makeStainedGlassWindow(x, z, ry, color1, color2) {
+    const g = new THREE.Group();
+    // Frame
+    const frame = new THREE.Mesh(
+        new THREE.BoxGeometry(4.4, 6.4, 0.4),
+        new THREE.MeshStandardMaterial({ color: 0x2a1838, roughness: 0.7, metalness: 0.4 })
+    );
+    g.add(frame);
+    // Glass panels with patterns
+    const panelGeo = new THREE.PlaneGeometry(1.9, 2.9);
+    const colors = [color1, color2, color1, color2];
+    [[-1.05,1.55],[1.05,1.55],[-1.05,-1.55],[1.05,-1.55]].forEach(([px,py], i) => {
+        const m = new THREE.MeshStandardMaterial({
+            color: colors[i],
+            emissive: colors[i],
+            emissiveIntensity: 1.4,
+            roughness: 0.2, metalness: 0.0,
+            transparent: true, opacity: 0.9,
+            side: THREE.DoubleSide
+        });
+        const p = new THREE.Mesh(panelGeo, m);
+        p.position.set(px, py, 0.21);
+        g.add(p);
+    });
+    // Cross mullion
+    const mh = new THREE.Mesh(
+        new THREE.BoxGeometry(4.0, 0.18, 0.5),
+        new THREE.MeshStandardMaterial({ color: 0x14081d, roughness: 0.5, metalness: 0.6 })
+    );
+    g.add(mh);
+    const mv = new THREE.Mesh(
+        new THREE.BoxGeometry(0.18, 6.0, 0.5),
+        new THREE.MeshStandardMaterial({ color: 0x14081d, roughness: 0.5, metalness: 0.6 })
+    );
+    g.add(mv);
+    // Backlight
+    const light = new THREE.PointLight(color1, 1.2, 10, 1.5);
+    light.position.set(0, 0, 0.3);
+    g.add(light);
+    g.userData.backlight = light;
+    g.userData.color1 = new THREE.Color(color1);
+    g.userData.color2 = new THREE.Color(color2);
+    g.position.set(x, 4.5, z);
+    g.rotation.y = ry;
+    return g;
+}
+
+const windows = [];
+[
+    [-39.7, -22, Math.PI/2,  0xff3366, 0x9b1c5b],
+    [-39.7,   0, Math.PI/2,  0x66ccff, 0x2266aa],
+    [-39.7,  22, Math.PI/2,  0xffaa44, 0xcc6622],
+    [ 39.7, -22, -Math.PI/2, 0x44ff88, 0x227755],
+    [ 39.7,   0, -Math.PI/2, 0xb794f6, 0x6b46c1],
+    [ 39.7,  22, -Math.PI/2, 0xffd700, 0xcc9900]
+].forEach(([x,z,ry,c1,c2]) => { const w = makeStainedGlassWindow(x,z,ry,c1,c2); scene.add(w); windows.push(w); });
+
+// ═══ COLUMNS (with collision) ══════════════════════════════════════════
 function makeColumn(x, z) {
     const g = new THREE.Group();
     const shaft = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.6, 0.6, 7, 16),
-        new THREE.MeshStandardMaterial({ color: 0x4a3260, roughness: 0.7 })
+        new THREE.CylinderGeometry(0.6, 0.62, 7.4, 20, 4),
+        new THREE.MeshStandardMaterial({ color: 0x4a3260, roughness: 0.55, metalness: 0.2, envMapIntensity: 0.6 })
     );
-    shaft.position.y = 3.5;
+    shaft.position.y = 3.7;
     shaft.castShadow = true; shaft.receiveShadow = true;
     g.add(shaft);
+    // Fluting groove (decorative torus rings)
+    [1.2, 5.8].forEach(yy => {
+        const ring = new THREE.Mesh(
+            new THREE.TorusGeometry(0.65, 0.09, 8, 24),
+            new THREE.MeshStandardMaterial({ color: 0x6b46c1, metalness: 0.5, roughness: 0.4 })
+        );
+        ring.position.y = yy;
+        ring.rotation.x = Math.PI/2;
+        g.add(ring);
+    });
     const cap = new THREE.Mesh(
-        new THREE.BoxGeometry(1.6, 0.4, 1.6),
-        new THREE.MeshStandardMaterial({ color: 0x6b46c1, roughness: 0.6 })
+        new THREE.BoxGeometry(1.7, 0.4, 1.7),
+        new THREE.MeshStandardMaterial({ color: 0x6b46c1, roughness: 0.4, metalness: 0.5 })
     );
-    cap.position.y = 7.2;
+    cap.position.y = 7.6;
     cap.castShadow = true;
     g.add(cap);
     g.position.set(x, 0, z);
@@ -223,188 +549,412 @@ function makeColumn(x, z) {
 }
 
 const columns = [];
-const colCoords = [
-    [-15, -15], [15, -15], [-15, 15], [15, 15],
-    [-25, 0], [25, 0], [0, -25], [0, 25]
-];
-colCoords.forEach(([x,z]) => { const c = makeColumn(x,z); scene.add(c); columns.push({x, z, r: 0.8}); });
+[[-15,-15],[15,-15],[-15,15],[15,15],[-25,0],[25,0],[0,-25],[0,25]].forEach(([x,z]) => {
+    const c = makeColumn(x,z); scene.add(c); columns.push({x, z, r: 0.9});
+});
 
-// ═══ JACK-O-LANTERNS ═══════════════════════════════════════════════════
-function makeJackO(x, z) {
+// ═══ CHANDELIERS ═══════════════════════════════════════════════════════
+function makeChandelier(x, z) {
     const g = new THREE.Group();
-    const pumpkin = new THREE.Mesh(
-        new THREE.SphereGeometry(0.6, 12, 12),
-        new THREE.MeshStandardMaterial({ color: 0xff6600, emissive: 0xff3300, emissiveIntensity: 0.4, roughness: 0.6 })
+    // Chain
+    const chain = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.04, 0.04, 3.6, 6),
+        new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.9, roughness: 0.4 })
     );
-    pumpkin.scale.y = 0.85;
-    pumpkin.castShadow = true;
-    g.add(pumpkin);
-    const stem = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.08, 0.1, 0.3, 6),
-        new THREE.MeshStandardMaterial({ color: 0x4a7c2a })
+    chain.position.y = 1.8;
+    g.add(chain);
+    // Central orb
+    const orb = new THREE.Mesh(
+        new THREE.SphereGeometry(0.3, 16, 12),
+        new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.25, envMapIntensity: 1.2 })
     );
-    stem.position.y = 0.6;
-    g.add(stem);
-    const flame = new THREE.PointLight(0xffaa44, 1.0, 6);
-    flame.position.y = 0;
-    g.add(flame);
-    g.userData.flame = flame;
-    g.position.set(x, 0.5, z);
+    orb.castShadow = true;
+    g.add(orb);
+    // Arms with candles
+    const arms = 6;
+    for (let i = 0; i < arms; i++) {
+        const ang = (i / arms) * Math.PI * 2;
+        // Arm
+        const arm = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.04, 0.04, 0.9, 6),
+            new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.3 })
+        );
+        arm.position.set(Math.cos(ang) * 0.5, 0, Math.sin(ang) * 0.5);
+        arm.rotation.z = -Math.cos(ang) * 0.6;
+        arm.rotation.x = Math.sin(ang) * 0.6;
+        g.add(arm);
+        // Candle
+        const candle = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.06, 0.07, 0.3, 8),
+            new THREE.MeshStandardMaterial({ color: 0xfff8e1, roughness: 0.6 })
+        );
+        candle.position.set(Math.cos(ang) * 0.95, 0.25, Math.sin(ang) * 0.95);
+        g.add(candle);
+        // Flame
+        const flame = new THREE.Mesh(
+            new THREE.ConeGeometry(0.06, 0.18, 8),
+            new THREE.MeshBasicMaterial({ color: 0xffaa44, transparent: true, opacity: 0.9 })
+        );
+        flame.position.set(Math.cos(ang) * 0.95, 0.5, Math.sin(ang) * 0.95);
+        g.add(flame);
+        // Flame light
+        const fl = new THREE.PointLight(0xffaa44, 0.4, 3.5, 1.6);
+        fl.position.copy(flame.position);
+        g.add(fl);
+    }
+    // Ambient chandelier light
+    const main = new THREE.PointLight(0xffaa55, 1.2, 10, 1.4);
+    main.position.y = 0;
+    main.castShadow = true;
+    main.shadow.mapSize.set(256, 256);
+    g.add(main);
+    g.userData.mainLight = main;
+
+    g.position.set(x, 5.5, z);
     return g;
 }
 
-const jackos = [];
-[[-20,-20],[20,-20],[-20,20],[20,20],[0,0],[-12,8],[12,-8]].forEach(([x,z]) => {
-    const j = makeJackO(x,z); scene.add(j); jackos.push(j);
+const chandeliers = [];
+[[-12, -12],[12, -12],[-12, 12],[12, 12],[0, 0]].forEach(([x,z]) => {
+    const c = makeChandelier(x, z); scene.add(c); chandeliers.push(c);
 });
 
-// ═══ KING BOO ══════════════════════════════════════════════════════════
+// ═══ INSTANCED JACK-O-LANTERNS ═════════════════════════════════════════
+const jackoCount = 32;
+const jackoGeo = new THREE.SphereGeometry(0.55, 12, 10);
+jackoGeo.scale(1, 0.85, 1);
+const jackoMat = new THREE.MeshStandardMaterial({
+    color: 0xff7722, emissive: 0xff4400, emissiveIntensity: 0.7,
+    roughness: 0.7, metalness: 0.05
+});
+const jackoMesh = new THREE.InstancedMesh(jackoGeo, jackoMat, jackoCount);
+jackoMesh.castShadow = true; jackoMesh.receiveShadow = true;
+
+const jackoLights = [];
+const dummy = new THREE.Object3D();
+for (let i = 0; i < jackoCount; i++) {
+    let x, z, ok = false, attempts = 0;
+    while (!ok && attempts < 30) {
+        const r = 6 + Math.random() * 28;
+        const a = Math.random() * Math.PI * 2;
+        x = Math.cos(a) * r; z = Math.sin(a) * r;
+        ok = columns.every(c => Math.hypot(x - c.x, z - c.z) > 2.0);
+        attempts++;
+    }
+    dummy.position.set(x, 0.5, z);
+    dummy.scale.setScalar(0.9 + Math.random() * 0.4);
+    dummy.rotation.y = Math.random() * Math.PI * 2;
+    dummy.updateMatrix();
+    jackoMesh.setMatrixAt(i, dummy.matrix);
+    if (i < 12) {
+        // Real point lights for the closest jack-os
+        const light = new THREE.PointLight(0xffaa44, 0.8, 5, 1.4);
+        light.position.set(x, 0.5, z);
+        scene.add(light);
+        jackoLights.push({ light, baseI: 0.8, x, z });
+    }
+}
+scene.add(jackoMesh);
+
+// ═══ KING BOO — custom translucent shader ══════════════════════════════
 const kingBoo = new THREE.Group();
 
+const booShader = {
+    uniforms: {
+        time:        { value: 0 },
+        opacity:     { value: 0.92 },
+        baseColor:   { value: new THREE.Color(0xfafafa) },
+        glowColor:   { value: new THREE.Color(0xc7adff) },
+        innerColor:  { value: new THREE.Color(0xff8eff) }
+    },
+    vertexShader: `
+        varying vec3 vNormalW;
+        varying vec3 vViewDir;
+        varying vec3 vPos;
+        void main(){
+            vec4 worldPos = modelMatrix * vec4(position, 1.0);
+            vNormalW = normalize(mat3(modelMatrix) * normal);
+            vViewDir = normalize(cameraPosition - worldPos.xyz);
+            vPos = position;
+            gl_Position = projectionMatrix * viewMatrix * worldPos;
+        }
+    `,
+    fragmentShader: `
+        uniform float time, opacity;
+        uniform vec3 baseColor, glowColor, innerColor;
+        varying vec3 vNormalW, vViewDir, vPos;
+        void main(){
+            float fresnel = pow(1.0 - max(dot(vNormalW, vViewDir), 0.0), 2.4);
+            float pulse   = 0.5 + 0.5 * sin(time * 2.0);
+            // Inner glow stronger toward edges, modulated
+            vec3 col = mix(baseColor, glowColor, fresnel);
+            col += innerColor * fresnel * 0.5 * (0.5 + pulse * 0.5);
+            // Core soft shimmer
+            float shimmer = 0.5 + 0.5 * sin(time * 3.0 + vPos.y * 4.0);
+            col += vec3(0.06, 0.05, 0.10) * shimmer;
+            gl_FragColor = vec4(col, opacity);
+        }
+    `,
+    transparent: true,
+    side: THREE.DoubleSide,
+    depthWrite: false
+};
+const booMat = new THREE.ShaderMaterial(booShader);
+
 const booBody = new THREE.Mesh(
-    new THREE.SphereGeometry(1.3, 24, 24),
-    new THREE.MeshStandardMaterial({
-        color: 0xfafafa, emissive: 0x9c7fdc, emissiveIntensity: 0.25,
-        transparent: true, opacity: 0.92, roughness: 0.1, metalness: 0
-    })
+    new THREE.SphereGeometry(1.3, 32, 32),
+    booMat
 );
 booBody.scale.set(1, 0.95, 1);
 booBody.castShadow = true;
 kingBoo.add(booBody);
 
-// Eyes (mischievous angled)
+// Eyes (mischievous)
 function makeEye(side) {
     const g = new THREE.Group();
     const black = new THREE.Mesh(
-        new THREE.SphereGeometry(0.18, 12, 12),
+        new THREE.SphereGeometry(0.2, 16, 16),
         new THREE.MeshBasicMaterial({ color: 0x000000 })
     );
     g.add(black);
     const shine = new THREE.Mesh(
-        new THREE.SphereGeometry(0.06, 8, 8),
+        new THREE.SphereGeometry(0.07, 10, 10),
         new THREE.MeshBasicMaterial({ color: 0xffffff })
     );
-    shine.position.set(0.05, 0.05, 0.13);
+    shine.position.set(0.06, 0.06, 0.14);
     g.add(shine);
-    g.position.set(0.32 * side, 0.25, 0.95);
-    g.rotation.z = -0.18 * side; // angry/mischievous slant
+    g.position.set(0.34 * side, 0.27, 0.95);
+    g.rotation.z = -0.2 * side;
     return g;
 }
 kingBoo.add(makeEye(-1), makeEye(1));
 
 // Mouth + tongue
 const mouthGroup = new THREE.Group();
-mouthGroup.position.set(0, -0.18, 1.05);
+mouthGroup.position.set(0, -0.2, 1.05);
 const mouth = new THREE.Mesh(
-    new THREE.SphereGeometry(0.25, 12, 12, 0, Math.PI*2, 0, Math.PI/2),
-    new THREE.MeshStandardMaterial({ color: 0x4a0e0e, side: THREE.DoubleSide })
+    new THREE.SphereGeometry(0.27, 16, 12, 0, Math.PI*2, 0, Math.PI/2),
+    new THREE.MeshStandardMaterial({ color: 0x4a0e0e, side: THREE.DoubleSide, roughness: 0.7, emissive: 0x220505, emissiveIntensity: 0.4 })
 );
 mouth.rotation.x = Math.PI;
-mouth.scale.set(1.4, 0.7, 0.6);
+mouth.scale.set(1.5, 0.7, 0.6);
 mouthGroup.add(mouth);
 
 const tongue = new THREE.Mesh(
-    new THREE.CapsuleGeometry(0.15, 0.4, 4, 8),
-    new THREE.MeshStandardMaterial({ color: 0xff5577, emissive: 0xaa2244, emissiveIntensity: 0.4, roughness: 0.3 })
+    new THREE.CapsuleGeometry(0.16, 0.5, 4, 12),
+    new THREE.MeshStandardMaterial({ color: 0xff4477, emissive: 0xaa1144, emissiveIntensity: 0.7, roughness: 0.25 })
 );
-tongue.position.set(0, -0.15, 0.18);
+tongue.position.set(0, -0.18, 0.18);
 tongue.rotation.x = Math.PI / 2;
-tongue.scale.set(1, 0.3, 1); // initial short
+tongue.scale.set(1, 0.3, 1);
 tongue.castShadow = true;
 mouthGroup.add(tongue);
 kingBoo.add(mouthGroup);
 
-// Crown (gold cone with gems)
+// Crown
 const crownGroup = new THREE.Group();
 crownGroup.position.set(0, 1.25, 0);
+const crownGoldMat = new THREE.MeshStandardMaterial({
+    color: 0xffd700, metalness: 0.95, roughness: 0.18,
+    emissive: 0xb8860b, emissiveIntensity: 0.35,
+    envMapIntensity: 1.6
+});
 const crownBase = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.55, 0.7, 0.25, 16),
-    new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.9, roughness: 0.2, emissive: 0xb8860b, emissiveIntensity: 0.3 })
+    new THREE.CylinderGeometry(0.55, 0.7, 0.28, 24),
+    crownGoldMat
 );
 crownGroup.add(crownBase);
-
-// Crown spikes
 for (let i = 0; i < 5; i++) {
     const angle = (i / 5) * Math.PI * 2;
     const spike = new THREE.Mesh(
-        new THREE.ConeGeometry(0.12, 0.4, 8),
-        new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.9, roughness: 0.2 })
+        new THREE.ConeGeometry(0.13, 0.42, 12),
+        crownGoldMat
     );
-    spike.position.set(Math.cos(angle) * 0.55, 0.27, Math.sin(angle) * 0.55);
+    spike.position.set(Math.cos(angle) * 0.55, 0.3, Math.sin(angle) * 0.55);
     crownGroup.add(spike);
-    // Gem on tip
+    // Gem on tip — emissive
     const gem = new THREE.Mesh(
-        new THREE.SphereGeometry(0.07, 8, 8),
-        new THREE.MeshStandardMaterial({ color: i % 2 ? 0xff3366 : 0x66ccff, emissive: i % 2 ? 0xaa0033 : 0x0066aa, emissiveIntensity: 0.6 })
+        new THREE.IcosahedronGeometry(0.08, 0),
+        new THREE.MeshStandardMaterial({
+            color: i % 2 ? 0xff3366 : 0x66ccff,
+            emissive: i % 2 ? 0xaa0033 : 0x0066aa,
+            emissiveIntensity: 1.2,
+            metalness: 0.4, roughness: 0.1, envMapIntensity: 2.0
+        })
     );
     gem.position.copy(spike.position);
-    gem.position.y += 0.2;
+    gem.position.y += 0.25;
     crownGroup.add(gem);
 }
 crownBase.castShadow = true;
 kingBoo.add(crownGroup);
 
-// Tail wisps (semi-transparent spheres trailing)
-const tailWisps = [];
-for (let i = 0; i < 3; i++) {
-    const w = new THREE.Mesh(
-        new THREE.SphereGeometry(0.5 - i * 0.1, 12, 12),
-        new THREE.MeshStandardMaterial({
-            color: 0xfafafa, transparent: true, opacity: 0.4 - i * 0.1,
-            emissive: 0x9c7fdc, emissiveIntensity: 0.2
-        })
-    );
-    w.position.set(0, -0.5 - i * 0.3, -0.4 - i * 0.3);
-    kingBoo.add(w);
-    tailWisps.push(w);
-}
-
 kingBoo.position.set(0, 2, 5);
 scene.add(kingBoo);
+
+// ═══ GPU PARTICLE TRAIL (ectoplasm) ════════════════════════════════════
+const trailCount = 220;
+const trailGeo = new THREE.BufferGeometry();
+const tPositions = new Float32Array(trailCount * 3);
+const tBirth     = new Float32Array(trailCount);
+const tSeed      = new Float32Array(trailCount);
+for (let i = 0; i < trailCount; i++) {
+    tPositions[i*3 + 0] = 0;
+    tPositions[i*3 + 1] = 0;
+    tPositions[i*3 + 2] = 0;
+    tBirth[i] = -10;
+    tSeed[i]  = Math.random();
+}
+trailGeo.setAttribute('position', new THREE.BufferAttribute(tPositions, 3));
+trailGeo.setAttribute('birth',    new THREE.BufferAttribute(tBirth, 1));
+trailGeo.setAttribute('seed',     new THREE.BufferAttribute(tSeed, 1));
+
+const trailMat = new THREE.ShaderMaterial({
+    uniforms: {
+        time:    { value: 0 },
+        size:    { value: 80 },
+        color1:  { value: new THREE.Color(0xb794f6) },
+        color2:  { value: new THREE.Color(0xff8eff) }
+    },
+    vertexShader: `
+        attribute float birth;
+        attribute float seed;
+        uniform float time;
+        uniform float size;
+        varying float vAlpha;
+        varying float vSeed;
+        void main(){
+            float age = max(0.0, time - birth);
+            float life = 1.6;
+            float t = age / life;
+            vAlpha = (1.0 - t) * step(0.0, t) * step(t, 1.0);
+            vSeed = seed;
+            vec3 pos = position;
+            // upward drift + sideways noise
+            pos.y += t * 0.6;
+            pos.x += sin(time * 1.5 + seed * 6.28) * 0.06 * t;
+            pos.z += cos(time * 1.2 + seed * 6.28) * 0.06 * t;
+            vec4 mv = modelViewMatrix * vec4(pos, 1.0);
+            gl_Position = projectionMatrix * mv;
+            gl_PointSize = size * (1.0 - t * 0.5) * (300.0 / -mv.z);
+        }
+    `,
+    fragmentShader: `
+        uniform vec3 color1, color2;
+        varying float vAlpha;
+        varying float vSeed;
+        void main(){
+            vec2 c = gl_PointCoord - 0.5;
+            float d = length(c);
+            if (d > 0.5) discard;
+            float soft = 1.0 - smoothstep(0.2, 0.5, d);
+            vec3 col = mix(color1, color2, vSeed);
+            gl_FragColor = vec4(col, soft * vAlpha * 0.55);
+        }
+    `,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+});
+const trailPoints = new THREE.Points(trailGeo, trailMat);
+scene.add(trailPoints);
+
+let trailIdx = 0;
+function emitTrail(time, x, y, z, count = 4) {
+    const posAttr   = trailGeo.attributes.position;
+    const birthAttr = trailGeo.attributes.birth;
+    const seedAttr  = trailGeo.attributes.seed;
+    for (let n = 0; n < count; n++) {
+        const i = trailIdx++ % trailCount;
+        const ox = (Math.random() - 0.5) * 0.5;
+        const oy = (Math.random() - 0.5) * 0.4;
+        const oz = (Math.random() - 0.5) * 0.5;
+        posAttr.setXYZ(i, x + ox, y + oy, z + oz);
+        birthAttr.array[i] = time;
+        seedAttr.array[i]  = Math.random();
+    }
+    posAttr.needsUpdate = true;
+    birthAttr.needsUpdate = true;
+    seedAttr.needsUpdate = true;
+}
+
+// ═══ LIGHTNING (when tongue connects) ══════════════════════════════════
+function spawnLightning(fromV, toV) {
+    const segments = 14;
+    const points = [];
+    for (let i = 0; i <= segments; i++) {
+        const t = i / segments;
+        const p = fromV.clone().lerp(toV, t);
+        if (i > 0 && i < segments) {
+            p.x += (Math.random() - 0.5) * 0.5;
+            p.y += (Math.random() - 0.5) * 0.5;
+            p.z += (Math.random() - 0.5) * 0.5;
+        }
+        points.push(p);
+    }
+    const g = new THREE.BufferGeometry().setFromPoints(points);
+    const m = new THREE.LineBasicMaterial({
+        color: 0xb794f6,
+        transparent: true,
+        opacity: 1.0
+    });
+    const line = new THREE.Line(g, m);
+    line.userData.life = 220;
+    line.userData.material = m;
+    scene.add(line);
+    audio.playLightning();
+    // Branch fork
+    if (Math.random() > 0.4) {
+        const branchStart = points[Math.floor(segments * 0.5)];
+        const branchEnd = branchStart.clone().add(new THREE.Vector3(
+            (Math.random() - 0.5) * 1.5,
+            (Math.random() - 0.5) * 1.5,
+            (Math.random() - 0.5) * 1.5
+        ));
+        const bg = new THREE.BufferGeometry().setFromPoints([branchStart, branchEnd]);
+        const bm = new THREE.LineBasicMaterial({ color: 0xddc8ff, transparent: true, opacity: 0.8 });
+        const bl = new THREE.Line(bg, bm);
+        bl.userData.life = 220; bl.userData.material = bm;
+        scene.add(bl);
+        lightnings.push(bl);
+    }
+    return line;
+}
+const lightnings = [];
 
 // ═══ MARIO NPCs ════════════════════════════════════════════════════════
 function makeMario(x, z, isLuigi = false) {
     const g = new THREE.Group();
-    // Overalls (blue cube)
     const overalls = new THREE.Mesh(
         new THREE.BoxGeometry(0.7, 0.7, 0.7),
-        new THREE.MeshStandardMaterial({ color: 0x1e3a8a })
+        new THREE.MeshStandardMaterial({ color: 0x1e3a8a, roughness: 0.7 })
     );
-    overalls.position.y = 0.35;
-    overalls.castShadow = true;
+    overalls.position.y = 0.35; overalls.castShadow = true;
     g.add(overalls);
-    // Shirt
     const shirt = new THREE.Mesh(
         new THREE.BoxGeometry(0.75, 0.3, 0.75),
-        new THREE.MeshStandardMaterial({ color: isLuigi ? 0x16a34a : 0xdc2626 })
+        new THREE.MeshStandardMaterial({ color: isLuigi ? 0x16a34a : 0xdc2626, roughness: 0.6 })
     );
-    shirt.position.y = 0.85;
-    shirt.castShadow = true;
+    shirt.position.y = 0.85; shirt.castShadow = true;
     g.add(shirt);
-    // Head
     const head = new THREE.Mesh(
         new THREE.BoxGeometry(0.6, 0.6, 0.6),
-        new THREE.MeshStandardMaterial({ color: 0xffd4a8 })
+        new THREE.MeshStandardMaterial({ color: 0xffd4a8, roughness: 0.5 })
     );
-    head.position.y = 1.3;
-    head.castShadow = true;
+    head.position.y = 1.3; head.castShadow = true;
     g.add(head);
-    // Hat
     const hat = new THREE.Mesh(
         new THREE.BoxGeometry(0.7, 0.25, 0.7),
-        new THREE.MeshStandardMaterial({ color: isLuigi ? 0x16a34a : 0xdc2626 })
+        new THREE.MeshStandardMaterial({ color: isLuigi ? 0x16a34a : 0xdc2626, roughness: 0.55 })
     );
-    hat.position.y = 1.7;
-    hat.castShadow = true;
+    hat.position.y = 1.7; hat.castShadow = true;
     g.add(hat);
-    // Mustache
     const mustache = new THREE.Mesh(
         new THREE.BoxGeometry(0.45, 0.1, 0.05),
         new THREE.MeshStandardMaterial({ color: 0x000000 })
     );
     mustache.position.set(0, 1.25, 0.32);
     g.add(mustache);
-    // Eyes
     [-0.15, 0.15].forEach(ex => {
         const eye = new THREE.Mesh(
             new THREE.BoxGeometry(0.08, 0.18, 0.05),
@@ -413,25 +963,18 @@ function makeMario(x, z, isLuigi = false) {
         eye.position.set(ex, 1.4, 0.31);
         g.add(eye);
     });
-
     g.position.set(x, 0, z);
     g.userData = {
-        type: 'mario',
-        state: 'wander',
+        type: 'mario', state: 'wander',
         target: new THREE.Vector3(x, 0, z),
-        wanderTimer: 0,
-        scared: false,
-        scaredTimer: 0,
-        isLuigi,
-        captured: false,
+        wanderTimer: 0, scared: false, scaredTimer: 0,
+        isLuigi, captured: false,
         speed: isLuigi ? 0.06 : 0.05,
-        speakBubble: null,
-        speakTimer: 0,
-        baseY: 0
+        speakBubble: null, speakTimer: 0,
+        baseY: 0, walkPhase: Math.random() * Math.PI * 2
     };
     return g;
 }
-
 const marios = [];
 const NUM_MARIOS = 8;
 for (let i = 0; i < NUM_MARIOS; i++) {
@@ -466,8 +1009,8 @@ document.addEventListener('mousemove', e => {
 let scaresScore = 0, ghostsScore = 0;
 let mariosLeft = NUM_MARIOS;
 let invisible = false;
-let invisCooldown = 0; // ms remaining of cooldown (0 = ready)
-let invisActive = 0;   // ms remaining of active vanish
+let invisCooldown = 0;
+let invisActive = 0;
 let tongueCooldown = 0;
 let tongueActive = 0;
 let dashCooldown = 0;
@@ -486,6 +1029,9 @@ const tmpRight = new THREE.Vector3();
 
 let gameStarted = false;
 let lastTime = performance.now();
+let elapsedSec = 0;
+let lastBooLaughTime = 0;
+let lastTongueHitFrame = 0;
 
 // ═══ HUD HELPERS ═══════════════════════════════════════════════════════
 function setBar(id, pct) { document.getElementById(id).style.width = pct + '%'; }
@@ -503,7 +1049,6 @@ function worldToScreen(pos3) {
     return { x: (v.x + 1) * window.innerWidth / 2, y: (1 - v.y) * window.innerHeight / 2 };
 }
 
-// ═══ MARIO SPEECH BUBBLE (DOM overlay) ═════════════════════════════════
 function spawnSpeech(mario, text) {
     const el = document.createElement('div');
     el.style.cssText = `position:absolute;font-family:'Press Start 2P',monospace;font-size:11px;color:#fff;background:rgba(220,38,38,0.95);padding:6px 10px;border:2px solid #fff;border-radius:6px;pointer-events:none;z-index:5;letter-spacing:1px;text-shadow:1px 1px 0 #000`;
@@ -513,8 +1058,7 @@ function spawnSpeech(mario, text) {
     mario.userData.speakTimer = 1800;
 }
 
-// ═══ COLLISION HELPERS ═════════════════════════════════════════════════
-function avoidColumns(pos, prev) {
+function avoidColumns(pos) {
     for (const c of columns) {
         const dx = pos.x - c.x, dz = pos.z - c.z;
         const d2 = dx*dx + dz*dz;
@@ -534,23 +1078,29 @@ function tick(now) {
     requestAnimationFrame(tick);
     const dt = Math.min(50, now - lastTime);
     lastTime = now;
-    if (!gameStarted) { renderer.render(scene, camera); return; }
+    elapsedSec += dt / 1000;
+
+    // Update shader uniforms regardless
+    booMat.uniforms.time.value = elapsedSec;
+    cinematicPass.uniforms.time.value = elapsedSec;
+    trailMat.uniforms.time.value = elapsedSec;
+
+    if (!gameStarted) { composer.render(); return; }
 
     // ── Cooldowns ─────────────────────────────────────────────────────
     invisCooldown   = Math.max(0, invisCooldown - dt);
-    invisActive    = Math.max(0, invisActive - dt);
-    tongueCooldown = Math.max(0, tongueCooldown - dt);
-    tongueActive   = Math.max(0, tongueActive - dt);
-    dashCooldown   = Math.max(0, dashCooldown - dt);
-    dashActive     = Math.max(0, dashActive - dt);
+    invisActive     = Math.max(0, invisActive - dt);
+    tongueCooldown  = Math.max(0, tongueCooldown - dt);
+    tongueActive    = Math.max(0, tongueActive - dt);
+    dashCooldown    = Math.max(0, dashCooldown - dt);
+    dashActive      = Math.max(0, dashActive - dt);
     if (invisActive === 0) invisible = false;
 
-    // HUD bars (show 0→100% as cooldown elapses)
     setBar('cd-tongue', tongueCooldown ? (1 - tongueCooldown / TONGUE_CD) * 100 : 100);
     setBar('cd-vanish', invisCooldown ? (1 - invisCooldown / VANISH_CD) * 100 : 100);
     setBar('cd-dash',   dashCooldown ? (1 - dashCooldown / DASH_CD) * 100 : 100);
 
-    // ── King Boo movement ─────────────────────────────────────────────
+    // ── Movement ──────────────────────────────────────────────────────
     tmpForward.set(Math.sin(mouseYaw), 0, Math.cos(mouseYaw));
     tmpRight.set(Math.cos(mouseYaw), 0, -Math.sin(mouseYaw));
     tmpDir.set(0, 0, 0);
@@ -569,44 +1119,34 @@ function tick(now) {
         velocity.multiplyScalar(0.85);
     }
 
-    if (keys['ShiftLeft'] || keys['ShiftRight']) {
-        if (dashCooldown === 0 && tmpDir.lengthSq() > 0.001) {
-            dashActive = DASH_DUR; dashCooldown = DASH_CD;
-        }
+    if ((keys['ShiftLeft'] || keys['ShiftRight']) && dashCooldown === 0 && tmpDir.lengthSq() > 0.001) {
+        dashActive = DASH_DUR; dashCooldown = DASH_CD;
+        audio.playWhoosh();
     }
 
-    const prev = kingBoo.position.clone();
     kingBoo.position.add(velocity);
-    avoidColumns(kingBoo.position, prev);
+    avoidColumns(kingBoo.position);
+    kingBoo.position.y = 1.8 + Math.sin(now * 0.003) * 0.18;
 
-    // Floating bob
-    const bob = Math.sin(now * 0.003) * 0.18;
-    kingBoo.position.y = 1.8 + bob;
-
-    // Boo faces movement direction (smoothed)
     if (velocity.lengthSq() > 0.0001) {
         const targetYaw = Math.atan2(velocity.x, velocity.z);
         kingBoo.rotation.y += ((targetYaw - kingBoo.rotation.y + Math.PI*3) % (Math.PI*2) - Math.PI) * 0.12;
     }
 
-    // Crown floats slightly
-    crownGroup.position.y = 1.25 + Math.sin(now * 0.004) * 0.04;
+    crownGroup.position.y = 1.25 + Math.sin(now * 0.004) * 0.05;
     crownGroup.rotation.y += dt * 0.0006;
 
-    // Tail wisps trail behind
-    tailWisps.forEach((w, i) => {
-        const t = now * 0.005 + i;
-        w.position.x = Math.sin(t) * 0.15;
-        w.position.y = -0.5 - i * 0.3 + Math.sin(t * 1.5) * 0.05;
-    });
+    // Emit ectoplasm trail
+    emitTrail(elapsedSec, kingBoo.position.x, kingBoo.position.y - 0.6, kingBoo.position.z,
+              dashActive > 0 ? 8 : 3);
 
     // ── Tongue ────────────────────────────────────────────────────────
     if (keys['Space'] && tongueCooldown === 0) {
         tongueActive = TONGUE_DUR; tongueCooldown = TONGUE_CD;
+        audio.playTongue();
     }
     if (tongueActive > 0) {
         const t = 1 - tongueActive / TONGUE_DUR;
-        // anticipation → extend → retract
         const ext = t < 0.3 ? t * 0.5 : t < 0.7 ? 5 : 5 - (t - 0.7) * 16;
         tongue.scale.z = Math.max(0.3, Math.min(8, ext));
         tongue.position.z = 0.18 + tongue.scale.z * 0.3;
@@ -618,72 +1158,76 @@ function tick(now) {
     // ── Vanish ────────────────────────────────────────────────────────
     if (keys['KeyE'] && invisCooldown === 0 && invisActive === 0) {
         invisActive = VANISH_DUR; invisCooldown = VANISH_CD; invisible = true;
+        audio.playWhoosh(); audio.playBooLaugh();
     }
-    booBody.material.opacity = invisible ? 0.18 : 0.92;
-    tailWisps.forEach(w => w.material.opacity = invisible ? 0.08 : (0.4 - tailWisps.indexOf(w) * 0.1));
+    booMat.uniforms.opacity.value = invisible ? 0.18 : 0.92;
 
-    // ── Aura light follows ────────────────────────────────────────────
+    // Aura light
     auraLight.position.copy(kingBoo.position);
     auraLight.position.y += 0.5;
-    auraLight.intensity = invisible ? 0.4 : 1.5;
+    auraLight.intensity = invisible ? 0.5 : 2.2;
 
-    // ── Camera follows King Boo (3rd person) ──────────────────────────
+    // Periodic boo laugh ambient
+    if (now - lastBooLaughTime > 9000 + Math.random() * 6000) {
+        lastBooLaughTime = now;
+        audio.playBooLaugh();
+    }
+
+    // ── Camera ────────────────────────────────────────────────────────
     const camOffsetDist = 7;
     const camHeight = 3 + Math.sin(mousePitch) * 4;
-    const camTargetX = kingBoo.position.x + Math.sin(mouseYaw) * camOffsetDist;
-    const camTargetY = kingBoo.position.y + camHeight;
-    const camTargetZ = kingBoo.position.z + Math.cos(mouseYaw) * camOffsetDist;
-    camera.position.lerp(new THREE.Vector3(camTargetX, camTargetY, camTargetZ), 0.15);
+    camera.position.lerp(new THREE.Vector3(
+        kingBoo.position.x + Math.sin(mouseYaw) * camOffsetDist,
+        kingBoo.position.y + camHeight,
+        kingBoo.position.z + Math.cos(mouseYaw) * camOffsetDist
+    ), 0.15);
     camera.lookAt(kingBoo.position.x, kingBoo.position.y + 0.5, kingBoo.position.z);
 
-    // ── Marios AI ─────────────────────────────────────────────────────
+    // ── Marios ────────────────────────────────────────────────────────
     const tongueWorldTip = tongueActive > 0 ?
-        new THREE.Vector3(0, -0.15, 0.18 + tongue.scale.z * 0.6).applyMatrix4(mouthGroup.matrixWorld)
+        new THREE.Vector3(0, -0.18, 0.18 + tongue.scale.z * 0.6).applyMatrix4(mouthGroup.matrixWorld)
         : null;
 
     marios.forEach(m => {
         if (m.userData.captured) return;
         const dx = kingBoo.position.x - m.position.x;
         const dz = kingBoo.position.z - m.position.z;
-        const distToBoo = Math.sqrt(dx*dx + dz*dz);
+        const distToBoo = Math.hypot(dx, dz);
 
-        // Wander or scared
         if (m.userData.scared) {
             m.userData.scaredTimer -= dt;
-            // Run AWAY from King Boo
             const awayX = -dx / (distToBoo || 1);
             const awayZ = -dz / (distToBoo || 1);
             m.position.x += awayX * m.userData.speed * 1.8 * dt * 0.06;
             m.position.z += awayZ * m.userData.speed * 1.8 * dt * 0.06;
             m.rotation.y = Math.atan2(awayX, awayZ);
-            // Body shake
-            m.position.y = Math.sin(now * 0.05) * 0.08;
+            m.userData.walkPhase += dt * 0.025;
+            m.position.y = Math.abs(Math.sin(m.userData.walkPhase * 1.5)) * 0.18;
             if (m.userData.scaredTimer <= 0) {
                 m.userData.scared = false;
                 m.userData.state = 'wander';
                 m.position.y = 0;
             }
         } else {
-            // Wander
             m.userData.wanderTimer -= dt;
             if (m.userData.wanderTimer <= 0) {
                 m.userData.target.set(
-                    (Math.random() - 0.5) * 60,
-                    0,
+                    (Math.random() - 0.5) * 60, 0,
                     (Math.random() - 0.5) * 60
                 );
                 m.userData.wanderTimer = 2000 + Math.random() * 3000;
             }
             const tdx = m.userData.target.x - m.position.x;
             const tdz = m.userData.target.z - m.position.z;
-            const td = Math.sqrt(tdx*tdx + tdz*tdz);
+            const td = Math.hypot(tdx, tdz);
             if (td > 0.5) {
                 m.position.x += (tdx / td) * m.userData.speed * dt * 0.06;
                 m.position.z += (tdz / td) * m.userData.speed * dt * 0.06;
                 m.rotation.y = Math.atan2(tdx, tdz);
+                m.userData.walkPhase += dt * 0.012;
+                m.position.y = Math.abs(Math.sin(m.userData.walkPhase)) * 0.08;
             }
 
-            // Detect King Boo (line-of-sight cone, only if visible)
             if (!invisible && distToBoo < 7) {
                 m.userData.scared = true;
                 m.userData.scaredTimer = 1800 + Math.random() * 800;
@@ -693,15 +1237,16 @@ function tick(now) {
                 const scs = worldToScreen(new THREE.Vector3(m.position.x, m.position.y + 2.5, m.position.z));
                 showPopup('+5', scs.x, scs.y, '#ff6677');
                 spawnSpeech(m, m.userData.isLuigi ? 'AAAH!' : 'MAMA MIA!');
+                audio.playScream();
             }
         }
 
-        // Tongue hit detection
+        // Tongue hit
         if (tongueWorldTip) {
             const ddx = m.position.x - tongueWorldTip.x;
             const ddz = m.position.z - tongueWorldTip.z;
-            if (ddx*ddx + ddz*ddz < 1.6) {
-                // CAPTURED
+            if (ddx*ddx + ddz*ddz < 1.6 && now - lastTongueHitFrame > 100) {
+                lastTongueHitFrame = now;
                 m.userData.captured = true;
                 ghostsScore += 100;
                 mariosLeft -= 1;
@@ -709,23 +1254,34 @@ function tick(now) {
                 document.getElementById('marios-left').textContent = mariosLeft;
                 const scp = worldToScreen(new THREE.Vector3(m.position.x, m.position.y + 2.5, m.position.z));
                 showPopup('+100 GHOST!', scp.x, scp.y, '#b794f6');
-                // Transform Mario into a small ghost (white sphere with eyes), float up and fade
                 m.userData.fadeIn = 0;
                 m.userData.captureTime = now;
                 m.children.forEach(c => {
                     if (c.material) {
                         c.material = new THREE.MeshStandardMaterial({
                             color: 0xfafafa, transparent: true, opacity: 0.7,
-                            emissive: 0xb794f6, emissiveIntensity: 0.4
+                            emissive: 0xb794f6, emissiveIntensity: 0.5
                         });
                     }
                 });
-
+                // Burst of trail particles
+                for (let p = 0; p < 30; p++) {
+                    emitTrail(elapsedSec,
+                        m.position.x + (Math.random() - 0.5) * 1.5,
+                        m.position.y + 1 + (Math.random() - 0.5) * 1,
+                        m.position.z + (Math.random() - 0.5) * 1.5, 1);
+                }
+                // Lightning to mario
+                spawnLightning(
+                    new THREE.Vector3().copy(tongueWorldTip),
+                    new THREE.Vector3(m.position.x, m.position.y + 1, m.position.z)
+                );
+                audio.playCapture();
                 if (mariosLeft === 0) winGame();
             }
         }
 
-        // Update speech bubble position
+        // Speech bubble follow
         if (m.userData.speakBubble) {
             m.userData.speakTimer -= dt;
             if (m.userData.speakTimer <= 0) {
@@ -739,7 +1295,7 @@ function tick(now) {
         }
     });
 
-    // ── Captured Marios float upward and despawn ──────────────────────
+    // Captured marios float up + fade
     marios.forEach(m => {
         if (m.userData.captured) {
             m.position.y += 0.04 * dt * 0.06 * 16;
@@ -751,18 +1307,45 @@ function tick(now) {
         }
     });
 
-    // ── Jack-o-lantern flicker ────────────────────────────────────────
-    jackos.forEach((j, i) => {
-        if (j.userData.flame) j.userData.flame.intensity = 0.6 + Math.sin(now * 0.01 + i) * 0.4;
+    // ── Lightning fade ────────────────────────────────────────────────
+    for (let i = lightnings.length - 1; i >= 0; i--) {
+        const l = lightnings[i];
+        l.userData.life -= dt;
+        l.userData.material.opacity = Math.max(0, l.userData.life / 220);
+        if (l.userData.life <= 0) { scene.remove(l); lightnings.splice(i, 1); }
+    }
+
+    // ── Jack-o flicker (point lights) ─────────────────────────────────
+    jackoLights.forEach((j, i) => {
+        j.light.intensity = j.baseI * (0.55 + 0.45 * Math.sin(now * 0.012 + i * 0.7) * Math.random());
     });
 
-    renderer.render(scene, camera);
+    // ── Chandelier sway + flame flicker ───────────────────────────────
+    chandeliers.forEach((c, i) => {
+        c.rotation.z = Math.sin(now * 0.0008 + i) * 0.025;
+        c.rotation.x = Math.cos(now * 0.0006 + i * 0.7) * 0.025;
+        if (c.userData.mainLight) {
+            c.userData.mainLight.intensity = 1.2 + Math.sin(now * 0.018 + i * 1.3) * 0.25;
+        }
+    });
+
+    // ── Stained-glass slow color cycle ────────────────────────────────
+    windows.forEach((w, i) => {
+        if (w.userData.backlight) {
+            const phase = now * 0.0005 + i;
+            w.userData.backlight.intensity = 1.0 + Math.sin(phase) * 0.4;
+        }
+    });
+
+    composer.render();
 }
 requestAnimationFrame(tick);
 
-// ═══ START / WIN ════════════════════════════════════════════════════════
+// ═══ START / WIN ═══════════════════════════════════════════════════════
 document.getElementById('start-btn').addEventListener('click', () => {
     document.getElementById('title').classList.add('hidden');
+    audio.init();
+    audio.startAmbient();
     gameStarted = true;
     renderer.domElement.requestPointerLock();
 });
@@ -776,11 +1359,14 @@ function winGame() {
     }, 1200);
 }
 
-// ═══ RESIZE ═════════════════════════════════════════════════════════════
+// ═══ RESIZE ════════════════════════════════════════════════════════════
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
+    bloomPass.setSize(window.innerWidth, window.innerHeight);
+    ssaoPass.setSize(window.innerWidth, window.innerHeight);
 });
 </script>
 </body>
